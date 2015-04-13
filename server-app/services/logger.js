@@ -1,5 +1,5 @@
 (function () {
-    'use strict'
+    'use strict';
     
     /**
      * Logger constructor
@@ -20,8 +20,8 @@
         log: function (message, level) {
             var toDisplay = (level ? level[0].toUpperCase() + ' ' : '  ') + (new Date()).toISOString() + '[' + process.pid + ']: > ' + message;
             console.log(toDisplay);
-            if (this.__proto__.logStream) {
-                this.__proto__.logStream.write(toDisplay + "\n");
+            if (Logger.prototype.logStream) {
+                Logger.prototype.logStream.write(toDisplay + "\n");
             }
         },
         /**
@@ -29,8 +29,8 @@
          * @param {boolean} force   if set the file will be opened; otherwise, the file is opened only it was not previously
          */
         openStream: function (force) {
-            if ((this.options.file) && ((force) || (!this.__proto__.logStream))) {
-                this.__proto__.logStream = require('fs').createWriteStream(this.options.file, {
+            if ((this.options.file) && ((force) || (!Logger.prototype.logStream))) {
+                Logger.prototype.logStream = require('fs').createWriteStream(this.options.file, {
                     flags: 'a'
                 });
             }

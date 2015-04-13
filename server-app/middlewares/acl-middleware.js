@@ -1,8 +1,8 @@
 (function () {
-    'use strict'
+    'use strict';
 
     var AclMiddleware = function () {
-    }
+    };
 
     AclMiddleware.prototype = {
 

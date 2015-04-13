@@ -1,5 +1,5 @@
 (function () {
-    'use strict'
+    'use strict';
 
     var CorsMiddleware = function (options) {
         this.options = require('extend')({
@@ -7,7 +7,7 @@
             allowedHeaderFields: ['origin', 'content-type', 'accept', 'Authorization'],
             allowedMethods: ['GET', 'POST', 'PUT', 'DELETE']
         }, options);
-    }
+    };
 
     CorsMiddleware.prototype = {
         /**

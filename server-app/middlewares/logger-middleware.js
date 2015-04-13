@@ -1,9 +1,9 @@
 (function () {
-    'use strict'
+    'use strict';
 
     var LoggerMiddleware = function (logger) {
         this.logger = logger;
-    }
+    };
 
     LoggerMiddleware.prototype = {
         /**

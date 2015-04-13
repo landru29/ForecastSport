@@ -1,11 +1,11 @@
 (function () {
-    'use strict'
+    'use strict';
 
     var TokenMiddleware = function (options) {
         this.options = require('extend')({
             secret: 'secret'
         }, options);
-    }
+    };
 
     TokenMiddleware.prototype = {
 

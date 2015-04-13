@@ -1,5 +1,5 @@
 (function () {
-    'use strict'
+    'use strict';
 
     var FileSystemMiddleware = function (options) {
         this.options = require('extend')({
@@ -9,7 +9,7 @@
                 default: 'index.html'
             }
         }, options);
-    }
+    };
 
     FileSystemMiddleware.prototype = {
         /**
