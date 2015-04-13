@@ -1,0 +1,8 @@
+authentification.json
+node_modules
+bower_components
+build
+dist
+.sass-cache
+dist.tgz
+*.log

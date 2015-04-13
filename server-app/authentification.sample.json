@@ -1,0 +1,14 @@
+{
+    "email": {
+		"service": "Gmail",
+		"auth": {
+			"user": "foo@gmail.com",
+			"pass": "password"
+		}
+	},
+    "db": {
+		"host": "localhost",
+		"port": "27017",
+		"database": "dbname"
+	},
+}

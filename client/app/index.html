@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="fr">
+    <head>
+        <meta charset="utf-8">
+        <title>Quizz</title>
+        
+        <!-- build:css(./build) styles/compiled.min.css -->
+        <link rel="stylesheet" href="styles/main.css">
+        <!-- endbuild -->
+        
+        
+        <!-- build:css(.) styles/vendor.css -->
+        <!-- bower:css -->
+        <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css" />
+        <link rel="stylesheet" href="bower_components/angular-xeditable/dist/css/xeditable.css" />
+        <!-- endbower -->
+        <!-- endbuild -->
+        
+    </head>
+    <style>
+        [ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
+            display: none;
+        }
+    </style>
+    <body>
+        <a id="top"></a>
+        <div class="app-frame">
+            <div class="main-frame" ng-app="ForecastDerby">
+                <div class="main-title">Forecast Derby</div>
+                <div class="main-menu" ng-controller="MenuCtrl">
+                    <div class="lang">
+                        <span class="en clickable" ng-click="changeLang('en')"></span>
+                        <span class="fr clickable" ng-click="changeLang('fr')"></span>
+                    </div>
+                    <ul ng-hide="printing" class="ng-cloak">
+                        <li ng-repeat="menuItem in menu" class="{{menuItem.class}}" ng-click="triggerAction(menuItem.action, menuItem.params)" >{{ menuItem.caption| translate}}</li>
+                        <li class="login-icon" ng-click="connect()" ng-hide="isConnected()">{{'Connect' | translate}}</li>
+                        <li class="login-icon" ng-click="disconnect()" ng-show="isConnected()">{{'Disconnect' | translate}}</li>
+                    </ul>
+                </div>
+                <div class="messages" ng-controller="MessageCtrl">
+                    <div class="ng-cloak">
+                        <div ng-repeat="msg in messages" class="alert alert-{{msg.type}} animated clickable" role="alert" ng-click="destroy(msg.uid)">{{msg.message || translate}}</div>
+                    </div>
+                </div>
+                <div class="view-container" ng-view="">
+                </div>
+            </div>
+        </div>
+        
+    <!-- build:js(.) scripts/vendor.js -->
+    <!-- bower:js -->
+    <script src="bower_components/jquery/dist/jquery.js"></script>
+    <script src="bower_components/angular/angular.js"></script>
+    <script src="bower_components/angular-route/angular-route.js"></script>
+    <script src="bower_components/angular-animate/angular-animate.js"></script>
+    <script src="bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
+    <script src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
+    <script src="bower_components/ngstorage/ngStorage.js"></script>
+    <script src="bower_components/angular-xeditable/dist/js/xeditable.js"></script>
+    <script src="bower_components/angular-translate/angular-translate.js"></script>
+    <script src="bower_components/angular-translate-loader-url/angular-translate-loader-url.js"></script>
+    <script src="bower_components/angular-translate-loader-static-files/angular-translate-loader-static-files.js"></script>
+    <!-- endbower -->
+    <!-- endbuild -->
+    
+    <!-- build:js scripts/Quiz.min.js -->    
+    <script type="text/javascript" src="scripts/app.js"> </script>
+    <script type="text/javascript" src="scripts/controllers/default-ctrl.js"> </script>
+    <script type="text/javascript" src="scripts/controllers/menu-ctrl.js"> </script>
+    <script type="text/javascript" src="scripts/controllers/message-ctrl.js"></script>
+    <script type="text/javascript" src="scripts/controllers/modal-connect-ctrl.js"> </script>
+    <!-- endbuild -->
+    </body>
+</html>
