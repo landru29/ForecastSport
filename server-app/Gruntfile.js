@@ -12,16 +12,14 @@ module.exports = function (grunt) {
 
         pkg: grunt.file.readJSON('package.json'),
         project: {
-            app: '.',
+            app: './app',
             test: './test'
         },
 
 
         jshint: {
             dev: [
-                '<%= project.app%>/middlewares/**/*.js',
-                '<%= project.app%>/services/**/*.js',
-                '<%= project.app%>/app.js',
+                '<%= project.app%>/**/*.js',
                 '<%= project.test%>/**/*.js',
                 'Gruntfile.js'
             ]

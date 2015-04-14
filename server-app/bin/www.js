@@ -6,7 +6,7 @@ var q = require('q');
 (function () {
 
     var cluster = require('cluster');
-    var config = require('../config.json');
+    var config = require('../app/config.json');
 
     var log = function (message, level) {
         console.log((level ? level[0].toUpperCase() + ' ' : '  ') + (new Date()).toISOString() + '[' + process.pid + ']: > ' + message);
@@ -55,7 +55,7 @@ var q = require('q');
     } else {
         switch (process.env.task) {
         case 'server':
-            var app = require('../app')({
+            var app = require('../app/app')({
                 q:q
             });
             //app.set('port', config.process['binding-port']);
@@ -66,7 +66,7 @@ var q = require('q');
             });
             break;
         case 'deamon':
-            var deamon = require('../deamon');
+            var deamon = require('../app/deamon');
             break;
         default:
             break;

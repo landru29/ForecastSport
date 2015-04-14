@@ -16,10 +16,7 @@
          * @return {object} Monk object pointing on the database
          */
         getDatabase: function () {
-            var mongoose = require('mongoose');
-            mongoose.connect('mongodb://' + this.options.host + ':' + this.options.port + '/' + this.options.database);
-            return mongoose.connection.db;
-            //return require('monk')(this.options.host + ':' + this.options.port + '/' + this.options.database);
+            return require('monk')(this.options.host + ':' + this.options.port + '/' + this.options.database);
         }
     };
 

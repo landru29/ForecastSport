@@ -6,7 +6,7 @@ require('./setup.js');
 
     describe("Users", function () {
         it("Insert and read", function (done) {
-            var userTable = require('../services/user-table.js')({
+            var userTable = require('../app/services/user-table.js')({
                 db: db
             });
             var user = {
@@ -40,7 +40,7 @@ require('./setup.js');
         });
 
         it("Mendatory login", function (done) {
-            var userTable = require('../services/user-table.js')({
+            var userTable = require('../app/services/user-table.js')({
                 db: db
             });
             var user = {
@@ -60,7 +60,7 @@ require('./setup.js');
         });
         
         it("Mendatory password", function (done) {
-            var userTable = require('../services/user-table.js')({
+            var userTable = require('../app/services/user-table.js')({
                 db: db
             });
             var user = {
@@ -80,7 +80,7 @@ require('./setup.js');
         });
         
         it("Mendatory email", function (done) {
-            var userTable = require('../services/user-table.js')({
+            var userTable = require('../app/services/user-table.js')({
                 db: db
             });
             var user = {
@@ -100,7 +100,7 @@ require('./setup.js');
         });
 
         it("Insert twice", function (done) {
-            var userTable = require('../services/user-table.js')({
+            var userTable = require('../app/services/user-table.js')({
                 db: db
             });
             var user = {
@@ -121,7 +121,7 @@ require('./setup.js');
         });
 
         it("Unknown user", function (done) {
-            var userTable = require('../services/user-table.js')({
+            var userTable = require('../app/services/user-table.js')({
                 db: db
             });
             var userFilter = {
@@ -137,7 +137,7 @@ require('./setup.js');
         });
         
         it("update user", function (done) {
-            var userTable = require('../services/user-table.js')({
+            var userTable = require('../app/services/user-table.js')({
                 db: db
             });
             var user = {
