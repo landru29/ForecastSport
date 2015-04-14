@@ -1,0 +1,14 @@
+
+[0m[0m
+[0m  Users[0m
+[2K[0G  [32m  ✓[0m[90m Insert and read[0m
+[2K[0G  [32m  ✓[0m[90m Mendatory login[0m
+[2K[0G  [32m  ✓[0m[90m Mendatory password[0m
+[2K[0G  [32m  ✓[0m[90m Mendatory email[0m
+[2K[0G  [32m  ✓[0m[90m Insert twice[0m
+[2K[0G  [32m  ✓[0m[90m Unknown user[0m
+[2K[0G  [32m  ✓[0m[90m update user[0m
+
+
+[92m [0m[32m 7 passing[0m[90m (248ms)[0m
+
