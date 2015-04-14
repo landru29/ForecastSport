@@ -6,3 +6,4 @@ dist
 .sass-cache
 dist.tgz
 *.log
+results.txt
