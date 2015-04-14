@@ -21,7 +21,5 @@
         }
     };
 
-    module.exports = function () {
-        return new FooMiddleware();
-    };
+    module.exports = FooMiddleware;
 })();

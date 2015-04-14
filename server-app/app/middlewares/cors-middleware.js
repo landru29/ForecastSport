@@ -64,7 +64,5 @@
     };
 
 
-    module.exports = function (config) {
-        return new CorsMiddleware(config);
-    };
+    module.exports = CorsMiddleware;
 })();

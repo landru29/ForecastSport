@@ -43,7 +43,5 @@
     };
 
 
-    module.exports = function (logger) {
-        return new LoggerMiddleware(logger);
-    };
+    module.exports = LoggerMiddleware;
 })();

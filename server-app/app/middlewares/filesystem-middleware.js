@@ -72,7 +72,5 @@
     };
 
 
-    module.exports = function (options) {
-        return new FileSystemMiddleware(options);
-    };
+    module.exports = FileSystemMiddleware;
 })();

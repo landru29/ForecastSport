@@ -10,10 +10,10 @@
          * @param   {Object | array} args single argument or array of arguments
          * @returns {function}            middleware to implement into Express
          */
-        var getMiddleware = function (name, args) {
+        var getMiddleware = function (name, options) {
             logger.log('Loading middleware ' + name);
-            var argument = (Object.prototype.toString.call(args) === '[object Array]' ? args : [args]);
-            return require(__dirname + '/middlewares/' + name + '-middleware').apply(null, 'undefined' !== typeof args ? argument : []).middleware();
+            var MiddleWareObj = require(__dirname + '/middlewares/' + name + '-middleware');
+            return (new MiddleWareObj(options)).middleware();
         };
 
         // Load configuration

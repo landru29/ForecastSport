@@ -73,7 +73,5 @@
         }
     };
 
-    module.exports = function () {
-        return new TokenMiddleware();
-    };
+    module.exports = TokenMiddleware;
 })();

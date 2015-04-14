@@ -6,7 +6,6 @@
             db: null
         }, options);
         this.table = this.db.get('users');
-        this.addIndexes();
     };
 
     UserTable.prototype = {
@@ -51,53 +50,70 @@
             });
             return defered.promise;
         },
+        getById: function(id) {
+            return this.getOne({_id: id});
+        },
         update: function (data) {
             var _self = this;
             var defered = q.defer();
             if ((!data.ObjectId) && (!data.login)) {
                 defered.reject('Missing ID or login');
             } else {
-                var filter={};
+                var filter = {};
                 if (data.login) filter.login = data.login;
                 if (data.ObjectId) filter.login = data.ObjectId;
-                this.table.update(filter, {
-                    $set: this.encodePassword(data)
-                }, function(err, user) {
-                    if (err) {
-                        defered.reject(err);
-                    } else {
-                        _self.getOne(filter).then(
-                            function(data){
-                                defered.resolve(data);
-                            }, 
-                            function(err){
+                _self.addIndexes().then(
+                    function () {
+                        _self.table.update(filter, {
+                            $set: _self.encodePassword(data)
+                        }, function (err, user) {
+                            if (err) {
                                 defered.reject(err);
+                            } else {
+                                _self.getOne(filter).then(
+                                    function (updatedUser) {
+                                        defered.resolve(updatedUser);
+                                    },
+                                    function (err) {
+                                        defered.reject(err);
+                                    }
+                                );
                             }
-                        );
+                        });
+                    },
+                    function (err) {
+                        defered.reject(err);
                     }
-                });
+                );
             }
             return defered.promise;
         },
         insert: function (data) {
             var defered = q.defer();
+            var _self = this;
             if (!this.checkMendatory(data)) {
                 defered.reject('Missing mendatory fields');
             } else {
-                this.table.insert(this.fieldMask(this.encodePassword(data)), function (err, user) {
-                    if (err) {
+                _self.addIndexes().then(
+                    function () {
+                        _self.table.insert(_self.fieldMask(_self.encodePassword(data)), function (err, user) {
+                            if (err) {
+                                defered.reject(err);
+                            } else {
+                                delete user.password;
+                                defered.resolve(user);
+                            }
+                        });
+                    },
+                    function (err) {
                         defered.reject(err);
-                    } else {
-                        delete user.password;
-                        defered.resolve(user);
                     }
-                });
+                );
+
             }
             return defered.promise;
         }
     };
 
-    module.exports = function (options) {
-        return new UserTable(options);
-    };
+    module.exports = UserTable;
 })();

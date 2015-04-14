@@ -1,12 +1,13 @@
-require('./setup.js');
+require('../setup.js');
 
 (function () {
 
+    var UserTable = require(appFolder + '/dao/user-table.js');
 
 
-    describe("Users", function () {
+    describe("dao/UserTable", function () {
         it("Insert and read", function (done) {
-            var userTable = require('../app/services/user-table.js')({
+            var userTable = new UserTable({
                 db: db
             });
             var user = {
@@ -40,7 +41,7 @@ require('./setup.js');
         });
 
         it("Mendatory login", function (done) {
-            var userTable = require('../app/services/user-table.js')({
+            var userTable = new UserTable({
                 db: db
             });
             var user = {
@@ -58,14 +59,14 @@ require('./setup.js');
             );
 
         });
-        
+
         it("Mendatory password", function (done) {
-            var userTable = require('../app/services/user-table.js')({
+            var userTable = new UserTable({
                 db: db
             });
             var user = {
                 name: 'mickey',
-                login:'papanoel',
+                login: 'papanoel',
                 email: 'bob@gmail.com',
             };
             userTable.insert(user).then(
@@ -78,14 +79,14 @@ require('./setup.js');
             );
 
         });
-        
+
         it("Mendatory email", function (done) {
-            var userTable = require('../app/services/user-table.js')({
+            var userTable = new UserTable({
                 db: db
             });
             var user = {
                 name: 'mickey',
-                login:'papanoel',
+                login: 'papanoel',
                 password: 'kiki',
             };
             userTable.insert(user).then(
@@ -100,20 +101,27 @@ require('./setup.js');
         });
 
         it("Insert twice", function (done) {
-            var userTable = require('../app/services/user-table.js')({
+            var userTable = new UserTable({
                 db: db
             });
             var user = {
-                name: 'mickey',
+                name: 'mickey-mouse',
                 login: 'login',
                 password: 'kiki',
                 email: 'bob@gmail.com',
             };
             userTable.insert(user).then(
-                function (data) {
-                    done('Should not insert the same user');
+                function () {
+                    userTable.insert(user).then(
+                        function () {
+                            done('Should not insert the same user');
+                        },
+                        function () {
+                            done();
+                        }
+                    );
                 },
-                function (err) {
+                function () {
                     done();
                 }
             );
@@ -121,7 +129,7 @@ require('./setup.js');
         });
 
         it("Unknown user", function (done) {
-            var userTable = require('../app/services/user-table.js')({
+            var userTable = new UserTable({
                 db: db
             });
             var userFilter = {
@@ -135,28 +143,44 @@ require('./setup.js');
             });
 
         });
-        
+
         it("update user", function (done) {
-            var userTable = require('../app/services/user-table.js')({
+            var userTable = new UserTable({
                 db: db
             });
-            var user = {
+            var user1 = {
+                name: 'mickey',
+                login: 'login',
+                password: 'kiki',
+                email: 'bob@gmail.com',
+            };
+            var user2 = {
                 login: 'login',
                 name: 'plutot',
                 password: 'Sissi l\'impératrice'
             };
-            userTable.update(user).then(function (doc) {
-                try {
-                    expect(doc.name).toBe(user.name);
-                } catch (e) {
-                    done(e);
+
+            userTable.insert(user1).then(
+                function () {
+                    userTable.update(user2).then(function (doc) {
+                        try {
+                            expect(doc.name).toBe(user2.name);
+                        } catch (e) {
+                            done(e);
+                        }
+                        done();
+                    }, function (err) {
+                        done('Should update the user');
+                    });
+                },
+                function (err) {
+                    done(err);
                 }
-                done();
-            }, function (err) {
-                done('Should update the user');
-            });
+            );
+
+
 
         });
-        
+
     });
 })();

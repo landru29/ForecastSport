@@ -20,7 +20,5 @@
         }
     };
 
-    module.exports = function () {
-        return new AclMiddleware();
-    };
+    module.exports = AclMiddleware;
 })();
