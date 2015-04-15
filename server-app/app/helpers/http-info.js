@@ -33,7 +33,7 @@
          * @returns {String} name of the resource or null
          */
         getResourceName: function() {
-            var matcher = this.req.url.match(/^\/(\w*)/);
+            var matcher = this.req.url.match(/^\/([\w-]*)/);
             if (matcher) {
                 return matcher[1];
             }

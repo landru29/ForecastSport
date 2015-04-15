@@ -15,6 +15,7 @@
             thisSeed = (thisSeed ? thisSeed : {});
             thisSeed = ('[object Array]' === Object.prototype.toString.call(thisSeed) ? thisSeed : [thisSeed]);
             for (n in thisSeed) {
+                console.log('  * ' + n);
                 promises.push(require('./seeds/' + files[i])({
                     config: config,
                     db: db,

@@ -103,7 +103,8 @@ angular.module('restClient').controller('DefaultCtrl', ['$scope', '$http', 'webS
                 $scope.result.json = JSON.stringify(resource.data, null, 4);
             }, function (error) {
                 $scope.result.error = error;
-                $scope.result.json = 'An error occured; see console';
+                $scope.result.status = error.status;
+                $scope.result.json = 'An error occured; see console ' + "\n\n" + error.statusText + "\n" + JSON.stringify(error.data, null, 4);
                 console.log(error);
             });
 

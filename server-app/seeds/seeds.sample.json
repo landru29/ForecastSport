@@ -5,5 +5,11 @@
         "password":"",
         "name":"admin",
         "role":"admin"
+    },{
+        "login":"user",
+        "email":"",
+        "password":"",
+        "name":"user",
+        "role":"user"
     }]
 }

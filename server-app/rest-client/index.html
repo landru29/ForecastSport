@@ -18,7 +18,7 @@
                 <legend>Headers</legend>
                 <div ng-repeat="data in headersData">
                     <input type="text" ng-model="data.label" placeholder="Label" />
-                    <input type="text" ng-model="data.value" placeholder="Value" />
+                    <input type="text" ng-model="data.value" placeholder="Value" style="width:700px"/>
                     <button ng-click="remove(headersData, data)">X</button>
                 </div>
                 <button ng-click="addField(headersData)">Add field</button>
@@ -27,7 +27,7 @@
                 <legend>POST / PUT / DELETE data</legend>
                 <div ng-repeat="data in postData">
                     <input type="text" ng-model="data.label" placeholder="Label" />
-                    <input type="text" ng-model="data.value" placeholder="Value" />
+                    <input type="text" ng-model="data.value" placeholder="Value" style="width:700px" />
                     <button ng-click="remove(postData, data)">X</button>
                 </div>
                 <button ng-click="addField(postData)">Add field</button>
@@ -36,7 +36,7 @@
                 <legend>GET data</legend>
                 <div ng-repeat="data in getData">
                     <input type="text" ng-model="data.label" placeholder="Label" />
-                    <input type="text" ng-model="data.value" placeholder="Value" />
+                    <input type="text" ng-model="data.value" placeholder="Value" style="width:700px" />
                     <button ng-click="remove(getData, data)">X</button>
                 </div>
                 <button ng-click="addField(getData)">Add field</button>
@@ -46,6 +46,7 @@
                 <div><span>Status: </span>{{result.status}}</div>
                 <pre>{{result.json}}</pre>
             </fieldset>
+            <button ng-click="result.json=''">Clear</button>
             
             
         </div>

@@ -48,7 +48,7 @@
                     break;
                 default:
                         res.log('Unknown http method (' + method + ')');
-                        res.status(401).send();
+                        res.status(410).send();
                 }
 
 

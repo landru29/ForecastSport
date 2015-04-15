@@ -24,6 +24,7 @@
             return function (req, res, next) {
                 var promises = [];
                 if ('undefined' !== typeof req.headers['refresh-token']) {
+                    res.log('refresh-token found');
                     var refreshDefered = q.defer();
                     promises.push(refreshDefered.promise);
                     _self.oauth.decodeRefreshToken(req.headers['refresh-token']).then(function (token) {
@@ -39,6 +40,7 @@
                     });
                 }
                 if ('undefined' !== typeof req.headers['access-token']) {
+                    res.log('access-token found');
                     var accessDefered = q.defer();
                     promises.push(accessDefered.promise);
                     _self.oauth.decodeAccessToken(req.headers['access-token']).then(function (token) {

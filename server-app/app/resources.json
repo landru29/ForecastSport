@@ -4,5 +4,11 @@
         "acl": {
             "POST": ["all"]
         }
+    },
+    "refresh-token": {
+        "controller": "resources/refresh-token.js",
+        "acl": {
+            "POST": ["all"]
+        }
     }
 }

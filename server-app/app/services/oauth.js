@@ -64,12 +64,12 @@
             });
             return defered.promise;
         },
-        
-        decodeRefreshToken: function(token) {
+
+        decodeRefreshToken: function (token) {
             return this.decodeToken(token, this.options.secretRefresh);
         },
-        
-        decodeAccessToken: function(token) {
+
+        decodeAccessToken: function (token) {
             return this.decodeToken(token, this.options.secretAccess);
         },
 
@@ -83,24 +83,38 @@
         getAccessToken: function (refreshToken) {
             var _self = this;
             var defered = q.defer();
-            
             this.decodeRefreshToken(refreshToken).then(
                 function (userId) {
-                    _self.options.userTable.getById(userId).then(
-                        function (user) {
-                            defered.resolve(jwt.sign(
-                                JSON.parse(JSON.stringify(user)),
-                                _self.options.secretAccess, {
-                                    expiresInMinutes: _self.options.expiresInMinutes
-                                }));
-                        },
-                        function (err) {
-                            defered.reject('User not found');
+                    console.log(userId);
+                    _self.getAccessTokenFromId(userId).then(
+                        function(data){
+                            defered.resolve(data);
+                        }, 
+                        function(err){
+                            defered.reject(err);
                         }
                     );
                 },
                 function (err) {
                     defered.reject(err);
+                }
+            );
+            return defered.promise;
+        },
+
+        getAccessTokenFromId: function (userId) {
+            var _self = this;
+            var defered = q.defer();
+            _self.options.userTable.getById(userId).then(
+                function (user) {
+                    defered.resolve(jwt.sign(
+                        JSON.parse(JSON.stringify(user)),
+                        _self.options.secretAccess, {
+                            expiresInMinutes: _self.options.expiresInMinutes
+                        }));
+                },
+                function (err) {
+                    defered.reject('User not found');
                 }
             );
             return defered.promise;

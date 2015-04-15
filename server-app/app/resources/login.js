@@ -3,7 +3,10 @@
     var Obj = function (router, options) {
         this.router = router;
         this.options = require('extend')({}, options);
-        for(var func in this) {
+        // All services are available in this.options.services
+
+        // launch all uppercase functions of the prototype
+        for (var func in this) {
             if ((func.match(/^[A-Z0-9]*$/)) && ('function' === typeof this[func])) {
                 this[func]();
             }
@@ -11,27 +14,27 @@
     };
 
     Obj.prototype = {
-        GET: function () {
-            this.router.get('/', function (req, res) {
-                res.send();
-            });
-        },
         POST: function () {
+            var _self = this;
             this.router.post('/', function (req, res) {
-                console.log(req);
-                res.send({hop:'bonjour'});
+                if ((req.body.login) && (req.body.password)) {
+                    _self.options.services.oAuth.requestTokens(req.body.login, req.body.password).then(
+                        function (data) {
+                            res.send(data);
+                        },
+                        function (err) {
+                            res.status(403).send({
+                                message: 'connection refused'
+                            });
+                        }
+                    );
+                } else {
+                    res.status(403).send({
+                        message: 'missing parameters'
+                    });
+                }
             });
-        },
-        PUT: function () {
-            this.router.put('/', function (req, res) {
-                res.send();
-            });
-        },
-        DELETE: function () {
-            this.router.delete('/', function (req, res) {
-                res.send();
-            });
-        },
+        }
     };
 
     module.exports = function (router, options) {

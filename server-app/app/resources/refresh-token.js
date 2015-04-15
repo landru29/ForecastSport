@@ -14,32 +14,21 @@
     };
 
     Obj.prototype = {
-        GET: function () {
-            var _self = this;
-            this.router.get('/', function (req, res) {
-                // Code here
-                res.send();
-            });
-        },
         POST: function () {
             var _self = this;
             this.router.post('/', function (req, res) {
-                // Code here
-                res.send();
-            });
-        },
-        PUT: function () {
-            var _self = this;
-            this.router.put('/', function (req, res) {
-                // Code here
-                res.send();
-            });
-        },
-        DELETE: function () {
-            var _self = this;
-            this.router.delete('/', function (req, res) {
-                // Code here
-                res.send();
+                if (res['refresh-token']) {
+                    _self.options.services.oAuth.getAccessTokenFromId(res['refresh-token']).then(
+                        function(data){
+                            res.send({'access-token':data});
+                        }, 
+                        function(err){
+                            res.status(403).send({message: '_You are not allowed to perform this operation'});
+                        }
+                    );
+                } else {
+                    res.status(403).send({message: 'You are not allowed to perform this operation'});
+                }
             });
         }
     };
