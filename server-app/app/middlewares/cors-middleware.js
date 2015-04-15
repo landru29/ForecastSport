@@ -7,6 +7,8 @@
             allowedHeaderFields: ['origin', 'content-type', 'accept', 'Authorization'],
             allowedMethods: ['GET', 'POST', 'PUT', 'DELETE']
         }, options);
+        
+        this.HttpInfo = require('../helpers/http-info.js');
     };
 
     CorsMiddleware.prototype = {
@@ -25,19 +27,6 @@
                 }
             }
         },
-        
-        /**
-         * Get the method of the request
-         * @param  {object} req request object
-         * @return {string} method
-         */
-        getHttpMethod: function (req) {
-            if (req.query.method) {
-                return req.query.method.toUpperCase();
-            } else {
-                return req.method.toUpperCase();
-            }
-        },
 
         /**
          * Express Middleware to manage LOG
@@ -49,8 +38,9 @@
         middleware: function() {
             var _self = this;
             return function (req, res, next) {
+                var info = new _self.HttpInfo(req);
                 _self.allowCrossDomain(req, res, _self.options.domains);
-                switch (_self.getHttpMethod(req)) {
+                switch (info.getHttpMethod()) {
                 case 'OPTIONS':
                     res.header('Access-Control-Allow-Headers', _self.options.allowedHeaderFields.join(', '));
                     res.header('Access-Control-Allow-Methods', _self.options.allowedMethods.join(', '));

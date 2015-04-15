@@ -38,9 +38,10 @@
     };
 
 
-    module.exports = function (options) {
+    module.exports = Logger;
+    /*module.exports = function (options) {
         var logger = new Logger(options);
         logger.openStream();
         return logger;
-    };
+    };*/
 })();

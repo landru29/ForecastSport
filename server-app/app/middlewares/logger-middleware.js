@@ -1,8 +1,10 @@
 (function () {
     'use strict';
 
-    var LoggerMiddleware = function (logger) {
-        this.logger = logger;
+    var LoggerMiddleware = function (options) {
+        this.options = require('extend')({
+            logger:null
+        }, options);
     };
 
     LoggerMiddleware.prototype = {
@@ -32,9 +34,8 @@
             return function (req, res, next) {
                 res.uuid = _self.generateUUID();
                 res.log = function (message) {
-                    //console.log(loggerObj.logger);
-                    if (_self.logger) {
-                        _self.logger.log('(' + res.uuid + '): ' + message);
+                    if (_self.options.logger) {
+                        _self.options.logger.log('(' + res.uuid + '): ' + message);
                     }
                 };
                 next();

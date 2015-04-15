@@ -20,7 +20,5 @@
         }
     };
 
-    module.exports = function (options) {
-        return new Database(options);
-    };
+    module.exports = Database;
 })();

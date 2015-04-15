@@ -9,32 +9,11 @@
                 default: 'index.html'
             }
         }, options);
+        this.publicFolder = require('path').normalize(this.options.basePath + '/' + this.options.public.folder);
+        this.HttpInfo = require('../helpers/http-info.js');
     };
 
     FileSystemMiddleware.prototype = {
-        /**
-         * Get the method of the request
-         * @param  {object} req request object
-         * @return {string} method
-         */
-        getHttpMethod: function (req) {
-            if (req.query.method) {
-                return req.query.method.toUpperCase();
-            } else {
-                return req.method.toUpperCase();
-            }
-        },
-
-        /**
-         * Get the full path of a requested file
-         * @param  {object} req request object
-         * @return {string}     full path
-         */
-        getFullPath: function (req) {
-            // delete first '/' if exists and all the string after a '?'
-            var resource = req.url.replace(/^\//, '').replace(/[\?].*/, '');
-            return resource.length > 0 ? resource : null;
-        },
 
         /**
          * Express Middleware to manage LOG
@@ -47,17 +26,17 @@
             var _self = this;
             var fs = require('fs');
             return function (req, res, next) {
-                var publicFolder = _self.options.basePath + '/' + _self.options.public.folder;
-                switch (_self.getHttpMethod(req)) {
+                var info = new _self.HttpInfo(req);
+                switch (info.getHttpMethod()) {
                 case 'GET':
-                    var requestedPath = _self.getFullPath(req);
-                    var requestedUrl = ((req.url) && (req.url.length > 1) ? req.url : '/' + _self.options.public.default);
-                    var filename = publicFolder + requestedUrl;
+                    var requestedPath = info.getFullPath();
+                    var requestedUrl = ((req.url) && (req.url.length > 1) ? req.url : '/' + _self.options.public.default).replace(/\.\./g, '');
+                    var filename = _self.publicFolder + requestedUrl;
                     // check if a specific file was requested
                     if ((requestedUrl) && (fs.existsSync(filename))) {
                         res.log('Serving file ' + requestedUrl);
                         res.sendfile(requestedUrl, {
-                            root: publicFolder
+                            root: _self.publicFolder
                         });
                     } else {
                         res.log('File ' + filename + ' not found. serving the resource');

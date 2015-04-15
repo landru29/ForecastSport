@@ -1,12 +1,13 @@
 #!/usr/bin/env node
 
 
-var q = require('q');
+GLOBAL.q = require('q');
 
 (function () {
 
     var cluster = require('cluster');
     var config = require('../app/config.json');
+    var Server = require('../app/app');
 
     var log = function (message, level) {
         console.log((level ? level[0].toUpperCase() + ' ' : '  ') + (new Date()).toISOString() + '[' + process.pid + ']: > ' + message);
@@ -55,10 +56,7 @@ var q = require('q');
     } else {
         switch (process.env.task) {
         case 'server':
-            var app = require('../app/app')({
-                q:q
-            });
-            //app.set('port', config.process['binding-port']);
+            var app = (new Server()).app;
 
             /* Binding */
             var server = app.listen(config.process['binding-port'], function () {
