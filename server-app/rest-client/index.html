@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="fr">
+    <head>
+        <meta charset="utf-8">
+        <title>Rest Client</title>
+    </head>
+    <body>
+        <div ng-app="restClient" ng-controller="DefaultCtrl">
+            <div>
+                <input type="text" placeholder="url" ng-model="url" />
+                <input type="text" placeholder="resource" ng-model="resource" />
+            </div>
+            <select ng-model="method"
+                ng-options="opt as opt.label for opt in methods">
+            </select>
+            <button ng-click="sendRequest()">Send</button>
+            <fieldset>
+                <legend>Headers</legend>
+                <div ng-repeat="data in headersData">
+                    <input type="text" ng-model="data.label" placeholder="Label" />
+                    <input type="text" ng-model="data.value" placeholder="Value" />
+                    <button ng-click="remove(headersData, data)">X</button>
+                </div>
+                <button ng-click="addField(headersData)">Add field</button>
+            </fieldset>
+            <fieldset>
+                <legend>POST / PUT / DELETE data</legend>
+                <div ng-repeat="data in postData">
+                    <input type="text" ng-model="data.label" placeholder="Label" />
+                    <input type="text" ng-model="data.value" placeholder="Value" />
+                    <button ng-click="remove(postData, data)">X</button>
+                </div>
+                <button ng-click="addField(postData)">Add field</button>
+            </fieldset>
+            <fieldset>
+                <legend>GET data</legend>
+                <div ng-repeat="data in getData">
+                    <input type="text" ng-model="data.label" placeholder="Label" />
+                    <input type="text" ng-model="data.value" placeholder="Value" />
+                    <button ng-click="remove(getData, data)">X</button>
+                </div>
+                <button ng-click="addField(getData)">Add field</button>
+            </fieldset>
+            <fieldset>
+                <legend>Response</legend>
+                <div><span>Status: </span>{{result.status}}</div>
+                <pre>{{result.json}}</pre>
+            </fieldset>
+            
+            
+        </div>
+ 
+        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.min.js"></script>
+        <script type="text/javascript" src="scripts/app.js"> </script>
+        <script type="text/javascript" src="scripts/controller.js"> </script>
+        <script type="text/javascript" src="angular-webstorage.js"> </script>
+    </body>
+</html>

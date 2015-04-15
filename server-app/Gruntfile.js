@@ -13,8 +13,47 @@ module.exports = function (grunt) {
         pkg: grunt.file.readJSON('package.json'),
         project: {
             app: './app',
-            test: './test'
+            test: './test',
+            restClient: './rest-client'
         },
+        
+        /*************************************************/
+        /** REST CLIENT                                 **/
+        /*************************************************/
+        
+        express: { // create a server to localhost
+            rest: {
+                options: {
+                    bases: ['<%= project.restClient%>', './node_modules/angular-webstorage/dist'],
+                    port: 9000,
+                    hostname: "0.0.0.0",
+                    livereload: true
+                }
+            }
+        },
+
+        open: { // open application in Chrome
+            rest: {
+                path: 'http://localhost:<%= express.rest.options.port%>',
+                app: 'google-chrome'
+            }
+        },
+
+        watch: { // watch files, trigger actions and perform livereload
+            rest: {
+                files: ['<%= project.restClient%>/index.html', '<%= project.restClient%>/scripts/**/*.js'],
+                tasks: [
+                ],
+                options: {
+                    livereload: true
+                }
+            }
+        },
+
+        
+        /*************************************************/
+        /** QUALITY OF CODE                             **/
+        /*************************************************/
 
 
         jshint: {
@@ -47,6 +86,12 @@ module.exports = function (grunt) {
     grunt.registerTask('check', [
         'jshint:dev',
         'mochaTest'
+    ]);
+    
+    grunt.registerTask('rest', [
+        'express:rest',
+        'open:rest',
+        'watch:rest'
     ]);
 
 

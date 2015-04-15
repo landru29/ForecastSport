@@ -50,8 +50,10 @@
             });
             return defered.promise;
         },
-        getById: function(id) {
-            return this.getOne({_id: id});
+        getById: function (id) {
+            return this.getOne({
+                _id: id
+            });
         },
         update: function (data) {
             var _self = this;
@@ -111,6 +113,18 @@
                 );
 
             }
+            return defered.promise;
+        },
+        remove: function (filter) {
+            var defered = q.defer();
+            var _self = this;
+            _self.table.remove(filter, function (err, data) {
+                if (err) {
+                    defered.reject(err);
+                } else {
+                    defered.resolve(data);
+                }
+            });
             return defered.promise;
         }
     };

@@ -4,7 +4,7 @@
     var CorsMiddleware = function (options) {
         this.options = require('extend')({
             domains:[],
-            allowedHeaderFields: ['origin', 'content-type', 'accept', 'Authorization'],
+            allowedHeaderFields: ['origin', 'content-type', 'accept', 'Authorization', 'refresh-token', 'access-token'],
             allowedMethods: ['GET', 'POST', 'PUT', 'DELETE']
         }, options);
         
@@ -44,7 +44,7 @@
                 case 'OPTIONS':
                     res.header('Access-Control-Allow-Headers', _self.options.allowedHeaderFields.join(', '));
                     res.header('Access-Control-Allow-Methods', _self.options.allowedMethods.join(', '));
-                    res.log('Cors: ' + this.options.allowedHeaderFields.join(', '));
+                    res.log('Cors: ' + _self.options.allowedHeaderFields.join(', '));
                     break;
                 default:
                 }

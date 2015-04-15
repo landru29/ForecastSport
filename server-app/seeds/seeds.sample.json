@@ -1,0 +1,9 @@
+{
+    "users": [{
+        "login":"admin",
+        "email":"",
+        "password":"",
+        "name":"admin",
+        "role":"admin"
+    }]
+}

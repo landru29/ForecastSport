@@ -3,7 +3,7 @@
 
     var AclMiddleware = function (options) {
         this.options = require('extend')({
-            resources:{}
+            resources: {}
         }, options);
         this.HttpInfo = require('../helpers/http-info.js');
     };
@@ -19,23 +19,39 @@
          */
         middleware: function () {
             var _self = this;
-            return function(req, res, next) {
+            return function (req, res, next) {
                 var info = new _self.HttpInfo(req);
                 var resName = info.getResourceName();
                 var resConfig = _self.options.resources[resName];
-                if ((resConfig) && (resConfig.acl[info.getHttpMethod()])) {
-                    var role = (res['access-token'] ? res['access-token'].role : 'anonymous');
-                    if (_self.hasRole(resConfig.acl[info.getHttpMethod()], role)) {
-                        res.log('Role: ' + role)
-                        next();
+                var method = info.getHttpMethod();
+                switch (method) {
+                case 'OPTIONS':
+                    next();
+                    break;
+                case 'GET':
+                case 'POST':
+                case 'PUT':
+                case 'DELETE':
+                    if ((resConfig) && (resConfig.acl[method])) {
+                        var role = (res['access-token'] ? res['access-token'].role : 'anonymous');
+                        if (_self.hasRole(resConfig.acl[method], role)) {
+                            res.log('Role: ' + role);
+                            next();
+                        } else {
+                            res.log('Resource ' + resName + ' is not allowed to ' + role + ' (' + method + ')');
+                            res.status(401).send();
+                        }
                     } else {
-                        res.log('Resource ' + resName + ' is not allowed to ' + role);
-                        res.status(401).send('unauthorized');
+                        res.log('Request bad resource (' + method + '): ' + resName);
+                        res.status(404).send();
                     }
-                } else {
-                    res.log('Request bad resource: ' + resName);
-                    res.status(404).send('Not found');
+                    break;
+                default:
+                        res.log('Unknown http method (' + method + ')');
+                        res.status(401).send();
                 }
+
+
             };
         },
         /**
@@ -44,9 +60,9 @@
          * @param   {String}       role Role to check
          * @returns {Boolean}  True if 'role' is in the 'list'
          */
-        hasRole: function(list, role) {
+        hasRole: function (list, role) {
             var roleList = ('[object Array]' === Object.prototype.toString.call(list) ? list : [list]);
-            if ((roleList.indexOf('all')>-1) || (roleList.indexOf(role)>-1)) {
+            if ((roleList.indexOf('all') > -1) || (roleList.indexOf(role) > -1)) {
                 return true;
             }
             return false;

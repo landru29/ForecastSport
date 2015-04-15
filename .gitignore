@@ -7,3 +7,4 @@ dist
 dist.tgz
 *.log
 **/results.txt
+seeds.json
