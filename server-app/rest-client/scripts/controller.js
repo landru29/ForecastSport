@@ -3,24 +3,38 @@ angular.module('restClient').controller('DefaultCtrl', ['$scope', '$http', 'webS
     function ($scope, $http, webStorageService) {
         "use strict";
 
-        $scope.methods = [
-            {
-                label: 'GET',
-                value: 'GET'
-            },
-            {
-                label: 'POST',
-                value: 'POST'
-            },
-            {
-                label: 'PUT',
-                value: 'PUT'
-            },
-            {
-                label: 'DELETE',
-                value: 'DELETE'
+        $scope.getMethods = function (lst) {
+            var result = [];
+            for (var i in lst) {
+                result.push({
+                    label: lst[i],
+                    value: lst[i]
+                });
             }
-        ];
+            return result;
+        };
+
+        $scope.methods = $scope.getMethods(['GET', 'POST', 'PUT', 'DELETE']);
+
+        // only available if 'grunt rest' is launched
+        if (serverData) {
+            $scope.resources = [];
+            for (var i in serverData.resources) {
+                $scope.resources.push({
+                    label: serverData.resources[i],
+                    value: serverData.resources[i]
+                });
+            }
+        }
+
+        $scope.getResource = function (resName) {
+            for (var i in $scope.resources) {
+                if ($scope.resources[i].value === resName) {
+                    return $scope.resources[i];
+                }
+            }
+            return null;
+        };
 
         $scope.postData = [];
         $scope.getData = [];
@@ -40,7 +54,7 @@ angular.module('restClient').controller('DefaultCtrl', ['$scope', '$http', 'webS
 
         $scope.saveState = function () {
             webStorageService.set('url', $scope.url.replace(/\/$/, ''), true);
-            webStorageService.set('resource', $scope.resource, true);
+            webStorageService.set('resource', $scope.resourceValue, true);
             webStorageService.set('postData', $scope.postData, true);
             webStorageService.set('headersData', $scope.headersData, true);
             webStorageService.set('getData', $scope.getData, true);
@@ -55,7 +69,16 @@ angular.module('restClient').controller('DefaultCtrl', ['$scope', '$http', 'webS
             $scope.getData = (getData ? getData : []);
             $scope.headersData = (headersData ? headersData : []);
             $scope.url = webStorageService.get('url');
-            $scope.resource = webStorageService.get('resource');
+
+            $scope.resourceValue = webStorageService.get('resource');
+            if ($scope.resourceValue) {
+                for (var i in $scope.resources) {
+                    if ($scope.resources[i].value === $scope.resourceValue) {
+                        $scope.resource = $scope.resources[i];
+                        break;
+                    }
+                }
+            }
             var method = webStorageService.get('method');
             if (method) {
                 for (var i in $scope.methods) {
@@ -74,7 +97,7 @@ angular.module('restClient').controller('DefaultCtrl', ['$scope', '$http', 'webS
         $scope.sendRequest = function () {
             $scope.saveState();
 
-            var url = $scope.url.replace(/\/$/, '') + ($scope.resource ? '/' + $scope.resource : '');
+            var url = $scope.url.replace(/\/$/, '') + ($scope.resourceValue ? '/' + $scope.resourceValue : '');
             var getParam = [];
             for (var i in $scope.getData) {
                 getParam.push(encodeURIComponent($scope.getData[i].label) + '=' + encodeURIComponent($scope.getData[i].value));
@@ -84,7 +107,7 @@ angular.module('restClient').controller('DefaultCtrl', ['$scope', '$http', 'webS
             for (var n in $scope.postData) {
                 postData[$scope.postData[n].label] = $scope.postData[n].value;
             }
-            
+
             var headers = {};
             for (var t in $scope.headersData) {
                 headers[$scope.headersData[t].label] = $scope.headersData[t].value;
@@ -111,4 +134,27 @@ angular.module('restClient').controller('DefaultCtrl', ['$scope', '$http', 'webS
 
         };
 
-}]);
+        $scope.$watch('resource', function (newVal, oldVal) {
+            if ($scope.resourceValue !== newVal.value) {
+                $scope.resourceValue = newVal.value;
+            }
+        });
+
+        $scope.$watch('resourceValue', function (newVal, oldVal) {
+            if (oldVal !== newVal) {
+                var defaultMethods = $scope.getMethods(['GET', 'POST', 'PUT', 'DELETE']);;
+                var resObj = $scope.getResource(newVal);
+                if ((! resObj) && ($scope.methods.length !== defaultMethods.length)) {
+                    $scope.methods = defaultMethods;
+                    $scope.method = $scope.methods[0];
+                }
+                if (resObj) {
+                    $scope.methods = $scope.getMethods(serverData.methods[newVal]);
+                    $scope.method = $scope.methods[0];
+                    $scope.resource = resObj;
+                }
+                
+            }
+        });
+
+                }]);

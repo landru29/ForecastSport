@@ -7,6 +7,31 @@ module.exports = function (grunt) {
     // Load Grunt tasks declared in the package.json file
     require('matchdep').filterDev('grunt-*').forEach(grunt.loadNpmTasks);
 
+    grunt.task.registerMultiTask('serverData', 'Build the list of available resources.', function () {
+        var options = this.options({
+            dest:null
+        });
+        var allResources = [];
+        var methods = {};
+        this.files.forEach(function (f) {
+            var resources = grunt.file.readJSON(f.src);
+            for (var key in resources) {
+                allResources.push(key);
+                methods[key] = Object.keys(resources[key].acl);
+            }
+            grunt.log.writeln('  * ' + f.src);
+        });
+        
+        var content = 'var serverData = {';
+        content += 'resources:' + JSON.stringify(allResources) + ',';
+        content += 'methods:' + JSON.stringify(methods);
+        
+        grunt.file.write(options.dest, content + '};');
+
+        //grunt.log.writeln(this.target + ': ' + this.data);
+    });
+
+
     // Configure Grunt
     grunt.initConfig({
 
@@ -16,11 +41,11 @@ module.exports = function (grunt) {
             test: './test',
             restClient: './rest-client'
         },
-        
+
         /*************************************************/
         /** REST CLIENT                                 **/
         /*************************************************/
-        
+
         express: { // create a server to localhost
             rest: {
                 options: {
@@ -41,8 +66,13 @@ module.exports = function (grunt) {
 
         watch: { // watch files, trigger actions and perform livereload
             rest: {
-                files: ['<%= project.restClient%>/index.html', '<%= project.restClient%>/scripts/**/*.js'],
+                files: [
+                    '<%= project.restClient%>/index.html', 
+                    '<%= project.restClient%>/scripts/**/*.js',
+                    '<%= project.app%>/resources.json'
+                ],
                 tasks: [
+                    'serverData:rest'
                 ],
                 options: {
                     livereload: true
@@ -50,7 +80,7 @@ module.exports = function (grunt) {
             }
         },
 
-        
+
         /*************************************************/
         /** QUALITY OF CODE                             **/
         /*************************************************/
@@ -78,8 +108,23 @@ module.exports = function (grunt) {
                 },
                 src: ['test/**/*.js']
             }
-        }
+        },
 
+        /*****************************************************/
+        /** BUILD THE LIST OF RESOURCES FOR THE REST CLIENT **/
+        /*****************************************************/
+
+        serverData: {
+            rest: {
+                files: {
+                    src: ['<%= project.app%>/resources.json']
+
+                },
+                options: {
+                    dest: '<%= project.restClient%>/build/server.js'
+                }
+            }
+        }
 
     });
 
@@ -87,8 +132,9 @@ module.exports = function (grunt) {
         'jshint:dev',
         'mochaTest'
     ]);
-    
+
     grunt.registerTask('rest', [
+        'serverData:rest',
         'express:rest',
         'open:rest',
         'watch:rest'
