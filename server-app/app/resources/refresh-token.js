@@ -20,7 +20,7 @@
                 if (res['refresh-token']) {
                     _self.options.services.oAuth.getAccessTokenFromId(res['refresh-token']).then(
                         function(data){
-                            res.send({'access-token':data});
+                            res.send({'accessToken':data});
                         }, 
                         function(err){
                             res.status(403).send({message: '_You are not allowed to perform this operation'});

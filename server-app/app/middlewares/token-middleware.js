@@ -23,7 +23,7 @@
             var q = require('q');
             return function (req, res, next) {
                 var promises = [];
-                if ('undefined' !== typeof req.headers['refresh-token']) {
+                if (req.headers['refresh-token']) {
                     res.log('refresh-token found');
                     var refreshDefered = q.defer();
                     promises.push(refreshDefered.promise);
@@ -32,14 +32,13 @@
                                 'refresh-token': token
                             });
                     }, function (err) {
-                        refreshDefered.resolve({
-                                'refresh-token': {
-                                    err: err
-                                }
-                            });
+                        refreshDefered.reject({
+                            origin: 'refresh-token',
+                            message: err.name
+                        });
                     });
                 }
-                if ('undefined' !== typeof req.headers['access-token']) {
+                if (req.headers['access-token']) {
                     res.log('access-token found');
                     var accessDefered = q.defer();
                     promises.push(accessDefered.promise);
@@ -48,11 +47,10 @@
                                 'access-token': token
                             });
                     }, function (err) {
-                        accessDefered.resolve({
-                                'access-token': {
-                                    err: err
-                                }
-                            });
+                        accessDefered.reject({
+                            origin: 'access-token',
+                            message: err.name
+                        });
                     });
                 }
                 q.all(promises).then(function (data) {
@@ -64,7 +62,8 @@
                     }
                     next();
                 }, function (err) {
-                    next();
+                    res.log(err.name + ' : ' + err.message);
+                    res.status(403).send(err);
                 });
             };
         }

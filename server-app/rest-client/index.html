@@ -20,12 +20,17 @@
                         ng-options="opt as opt.label for opt in resources">
                     </select>
                 </div>
-                <select ng-model="method"
-                    ng-options="opt as opt.label for opt in methods">
-                </select>
-                <button ng-click="sendRequest()">Send</button>
+                <div>
+                    <select ng-model="method"
+                        ng-options="opt as opt.label for opt in methods">
+                    </select>
+                    <button ng-click="sendRequest()">Send</button>
+                </div>
+                <div>
+                    <span>OAuth </span><input type="checkbox" ng-model="oauth" />
+                </div>
             </fieldset>
-            <fieldset style="background:#eccef5">
+            <fieldset style="background:#eccef5" ng-hide="oauth">
                 <legend>Headers</legend>
                 <div ng-repeat="data in headersData">
                     <input type="text" ng-model="data.label" placeholder="Label" />
@@ -33,6 +38,13 @@
                     <button ng-click="remove(headersData, data)">X</button>
                 </div>
                 <button ng-click="addField(headersData)">Add field</button>
+            </fieldset>
+            <fieldset style="background:#eccef5" ng-show="oauth">
+                <legend>Login</legend>
+                <div><input type="text" ng-model="login" placeholder="login" /></div>
+                <div><input type="text" ng-model="password" placeholder="password"/></div>
+                <div><button ng-click="connect(login, password)">Connect</button></div>
+                <div>{{loginResult}}</div>
             </fieldset>
             <fieldset style="background:#ceecf5">
                 <legend>POST / PUT / DELETE data</legend>
@@ -66,6 +78,7 @@
         <script type="text/javascript" src="scripts/app.js"> </script>
         <script type="text/javascript" src="scripts/controller.js"> </script>
         <script type="text/javascript" src="build/server.js"> </script>
-        <script type="text/javascript" src="angular-webstorage.js"> </script>
+        <script type="text/javascript" src="scripts/service.js"></script>
+        <script type="text/javascript" src="angular-webstorage/dist/angular-webstorage.js"> </script>
     </body>
 </html>

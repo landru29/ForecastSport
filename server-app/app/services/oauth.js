@@ -55,9 +55,7 @@
             var defered = q.defer();
             jwt.verify(token, secret, function (err, decoded) {
                 if (err) {
-                    defered.resolve({
-                        err: err
-                    });
+                    defered.reject(err);
                 } else {
                     defered.resolve(decoded);
                 }

@@ -49,7 +49,7 @@ module.exports = function (grunt) {
         express: { // create a server to localhost
             rest: {
                 options: {
-                    bases: ['<%= project.restClient%>', './node_modules/angular-webstorage/dist'],
+                    bases: ['<%= project.restClient%>', './node_modules'],
                     port: 9000,
                     hostname: "0.0.0.0",
                     livereload: true
@@ -72,7 +72,8 @@ module.exports = function (grunt) {
                     '<%= project.app%>/resources.json'
                 ],
                 tasks: [
-                    'serverData:rest'
+                    'serverData:rest',
+                    'jshint:rest'
                 ],
                 options: {
                     livereload: true
@@ -90,6 +91,11 @@ module.exports = function (grunt) {
             dev: [
                 '<%= project.app%>/**/*.js',
                 '<%= project.test%>/**/*.js',
+                '<%= project.restClient%>/**/*.js',
+                'Gruntfile.js'
+            ],
+            rest: [
+                '<%= project.restClient%>/**/*.js',
                 'Gruntfile.js'
             ]
         },
@@ -135,6 +141,7 @@ module.exports = function (grunt) {
 
     grunt.registerTask('rest', [
         'serverData:rest',
+        'jshint:rest',
         'express:rest',
         'open:rest',
         'watch:rest'

@@ -5,6 +5,12 @@
             "POST": ["all"]
         }
     },
+    "user": {
+        "controller": "resources/user.js",
+        "acl": {
+            "GET": ["user", "admin"]
+        }
+    },
     "refresh-token": {
         "controller": "resources/refresh-token.js",
         "acl": {

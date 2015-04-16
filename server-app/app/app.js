@@ -85,7 +85,8 @@
                 oAuth: new OAuthService({
                     userTable: userTable,
                     secretRefresh: _self.config.OAuth.secretRefresh,
-                    secretAccess: _self.config.OAuth.secretAccess
+                    secretAccess: _self.config.OAuth.secretAccess,
+                    expiresInMinutes: _self.config.OAuth.expiresInMinutes
                 }),
                 database: database,
                 logger: new LoggerService({

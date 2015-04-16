@@ -1,6 +1,6 @@
 /*global angular */
-angular.module('restClient').controller('DefaultCtrl', ['$scope', '$http', 'webStorageService',
-    function ($scope, $http, webStorageService) {
+angular.module('restClient').controller('DefaultCtrl', ['$scope', '$http', 'OAuthHttp', 'webStorageService',
+    function ($scope, $http, OAuthHttp, webStorageService) {
         "use strict";
 
         $scope.getMethods = function (lst) {
@@ -59,6 +59,9 @@ angular.module('restClient').controller('DefaultCtrl', ['$scope', '$http', 'webS
             webStorageService.set('headersData', $scope.headersData, true);
             webStorageService.set('getData', $scope.getData, true);
             webStorageService.set('method', $scope.method.value, true);
+            webStorageService.set('oauth', $scope.oauth, true);
+            webStorageService.set('login', $scope.login, true);
+            webStorageService.set('password', $scope.password, true);
         };
 
         $scope.loadState = function () {
@@ -69,6 +72,9 @@ angular.module('restClient').controller('DefaultCtrl', ['$scope', '$http', 'webS
             $scope.getData = (getData ? getData : []);
             $scope.headersData = (headersData ? headersData : []);
             $scope.url = webStorageService.get('url');
+            $scope.password = webStorageService.get('password');
+            $scope.login = webStorageService.get('login');
+            $scope.oauth = (webStorageService.get('oauth') === 'true');
 
             $scope.resourceValue = webStorageService.get('resource');
             if ($scope.resourceValue) {
@@ -81,9 +87,9 @@ angular.module('restClient').controller('DefaultCtrl', ['$scope', '$http', 'webS
             }
             var method = webStorageService.get('method');
             if (method) {
-                for (var i in $scope.methods) {
-                    if ($scope.methods[i].value === method) {
-                        $scope.method = $scope.methods[i];
+                for (var n in $scope.methods) {
+                    if ($scope.methods[n].value === method) {
+                        $scope.method = $scope.methods[n];
                         break;
                     }
                 }
@@ -96,6 +102,10 @@ angular.module('restClient').controller('DefaultCtrl', ['$scope', '$http', 'webS
 
         $scope.sendRequest = function () {
             $scope.saveState();
+            
+            $scope.result.status = -1;
+            $scope.result.data = null;
+            $scope.result.json = '';
 
             var url = $scope.url.replace(/\/$/, '') + ($scope.resourceValue ? '/' + $scope.resourceValue : '');
             var getParam = [];
@@ -116,11 +126,16 @@ angular.module('restClient').controller('DefaultCtrl', ['$scope', '$http', 'webS
             var request = {
                 url: url,
                 method: $scope.method.value,
-                data: postData,
-                headers: headers
+                data: postData
             };
+            
+            if (!$scope.oauth) {
+                request.headers = headers;
+            }
+            
+            var promise = ($scope.oauth ? OAuthHttp.http(request) : $http(request));
 
-            $http(request).then(function (resource) {
+            promise.then(function (resource) {
                 $scope.result.status = resource.status;
                 $scope.result.data = resource.data;
                 $scope.result.json = JSON.stringify(resource.data, null, 4);
@@ -133,6 +148,18 @@ angular.module('restClient').controller('DefaultCtrl', ['$scope', '$http', 'webS
 
 
         };
+        
+        $scope.connect = function(login, password) {
+            $scope.loginResult = '';
+            OAuthHttp.login(login, password).then(
+                function(data){
+                    $scope.loginResult = 'Success';
+                }, 
+                function(err){
+                    $scope.loginResult = 'Error !';
+                }
+            );
+        };
 
         $scope.$watch('resource', function (newVal, oldVal) {
             if ($scope.resourceValue !== newVal.value) {
@@ -142,7 +169,7 @@ angular.module('restClient').controller('DefaultCtrl', ['$scope', '$http', 'webS
 
         $scope.$watch('resourceValue', function (newVal, oldVal) {
             if (oldVal !== newVal) {
-                var defaultMethods = $scope.getMethods(['GET', 'POST', 'PUT', 'DELETE']);;
+                var defaultMethods = $scope.getMethods(['GET', 'POST', 'PUT', 'DELETE']);
                 var resObj = $scope.getResource(newVal);
                 if ((! resObj) && ($scope.methods.length !== defaultMethods.length)) {
                     $scope.methods = defaultMethods;
