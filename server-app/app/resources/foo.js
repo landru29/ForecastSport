@@ -3,7 +3,8 @@
     var Obj = function (router, options) {
         this.router = router;
         this.options = require('extend')({}, options);
-        // All services are available in this.options.services
+        this.services = this.options.services;
+        // All services are available in this.services
         
         // launch all uppercase functions of the prototype
         for(var func in this) {

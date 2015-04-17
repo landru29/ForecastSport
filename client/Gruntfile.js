@@ -70,6 +70,10 @@ module.exports = function (grunt) {
                 }
             }
         },
+        
+        /*************************************************/
+        /** QUALITY OF CODE                             **/
+        /*************************************************/
 
         jshint: {
             dev: [
@@ -301,11 +305,32 @@ module.exports = function (grunt) {
                     }
                 ]
             }
+        },
+
+        ngconstant: {
+            options: {
+                name: 'ClientGruntConfiguration',
+                dest: '<%= project.app%>/build/config.js',
+
+            },
+            dist: {
+
+                constants: {
+                    apiUrl: false
+                }
+            },
+            dev: {
+
+                constants: {
+                    apiUrl: 'http://localhost:3000'
+                }
+            }
         }
     });
 
     grunt.registerTask('serve', [
         'clean:dev',
+        'ngconstant:dev',
         'wiredep',
         'sass:dist',
         'copy:dev',
@@ -329,6 +354,7 @@ module.exports = function (grunt) {
     grunt.registerTask('prod', [
         'karma:unit',
         'clean:dist',
+        'ngconstant:dist',
         'wiredep',
         'copy:html',
         'useminPrepare',

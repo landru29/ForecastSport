@@ -3,7 +3,8 @@
     var Obj = function (router, options) {
         this.router = router;
         this.options = require('extend')({}, options);
-        // All services are available in this.options.services
+        this.services = this.options.services;
+        // All services are available in this.services
         
         // launch all uppercase functions of the prototype
         for(var func in this) {
@@ -17,8 +18,8 @@
         POST: function () {
             var _self = this;
             this.router.post('/', function (req, res) {
-                if (res['refresh-token']) {
-                    _self.options.services.oAuth.getAccessTokenFromId(res['refresh-token']).then(
+                if ((res['refresh-token']) && (res['refresh-token'].id)) {
+                    _self.services.oAuth.getAccessTokenFromId(res['refresh-token'].id).then(
                         function(data){
                             res.send({'accessToken':data});
                         }, 

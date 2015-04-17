@@ -16,5 +16,12 @@
         "acl": {
             "POST": ["all"]
         }
+    },
+    "reset-password": {
+        "controller": "resources/reset-password.js",
+        "acl": {
+            "GET": ["all"],
+            "POST": ["all"]
+        }
     }
 }

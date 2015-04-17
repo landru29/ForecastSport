@@ -6,14 +6,18 @@ angular.module('ForecastDerby', [
     'xeditable',
     'ngStorage',
     'ui.bootstrap',
-    'pascalprecht.translate'
+    'pascalprecht.translate',
+    'ClientGruntConfiguration'
 ]);
 
-angular.module('ForecastDerby').config(['$routeProvider', '$translateProvider', function ($routeProvider, $translateProvider) {
+angular.module('ForecastDerby').config(['$routeProvider', '$translateProvider', 'OAuthHttpProvider', 'apiUrl', function ($routeProvider, $translateProvider, OAuthHttpProvider, apiUrl) {
     'use strict';
     $routeProvider.when('/', {
         templateUrl: 'views/default.html',
         controller: 'DefaultCtrl'
+    }).when('/reset-password/login/:login/token/:token', {
+        templateUrl: 'views/reset-password.html',
+        controller: 'ResetPasswordCtrl'
     }).otherwise({
         redirectTo: '/'
     });
@@ -24,6 +28,8 @@ angular.module('ForecastDerby').config(['$routeProvider', '$translateProvider', 
     });
     
     $translateProvider.preferredLanguage('en');
+    
+    OAuthHttpProvider.setServerUrl((apiUrl ? apiUrl : window.location.origin));
     
 }]);
 

@@ -70,9 +70,10 @@
             var OAuthService = require('./services/oauth.js');
             var LoggerService = require('./services/logger.js');
             var DatabaseService = require('./services/database.js');
-            
+            var UserService = require('./services/user.js');
+
             // open database
-            var database= new DatabaseService(this.config.db);
+            var database = new DatabaseService(this.config.db);
             this.db = database.getDatabase();
 
             var userTable = new UserTable({
@@ -81,18 +82,27 @@
 
             var _self = this;
 
-            return {
-                oAuth: new OAuthService({
-                    userTable: userTable,
-                    secretRefresh: _self.config.OAuth.secretRefresh,
-                    secretAccess: _self.config.OAuth.secretAccess,
-                    expiresInMinutes: _self.config.OAuth.expiresInMinutes
-                }),
-                database: database,
-                logger: new LoggerService({
-                    file: __dirname + '/' + this.config.log.file
-                })
-            };
+            var services = {};
+
+            services.oAuth = new OAuthService({
+                userTable: userTable,
+                secretRefresh: _self.config.OAuth.secretRefresh,
+                secretAccess: _self.config.OAuth.secretAccess,
+                expiresInMinutes: _self.config.OAuth.expiresInMinutes,
+                services: services
+            });
+            services.user = new UserService({
+                collection: userTable,
+                resetPasswordSecret: _self.config.OAuth.resetPasswordSecret,
+                email: _self.config.email,
+                services: services
+            });
+            services.logger = new LoggerService({
+                file: __dirname + '/' + this.config.log.file
+            });
+            services.database = database;
+
+            return services;
         },
         /**
          * Load a custom middleware for express

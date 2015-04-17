@@ -50,7 +50,7 @@ module.exports = function (grunt) {
             rest: {
                 options: {
                     bases: ['<%= project.restClient%>', './node_modules'],
-                    port: 9000,
+                    port: 8000,
                     hostname: "0.0.0.0",
                     livereload: true
                 }

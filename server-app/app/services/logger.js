@@ -18,7 +18,8 @@
          * @param {String} message Message to log
          */
         log: function (message, level) {
-            var toDisplay = (level ? level[0].toUpperCase() + ' ' : '  ') + (new Date()).toISOString() + '[' + process.pid + ']: > ' + message;
+            var formatedMessage = JSON.stringify(message).replace(/^"/,'').replace(/"$/,'');
+            var toDisplay = (level ? level[0].toUpperCase() + ' ' : '  ') + (new Date()).toISOString() + '[' + process.pid + ']: > ' + formatedMessage;
             console.log(toDisplay);
             if (Logger.prototype.logStream) {
                 Logger.prototype.logStream.write(toDisplay + "\n");

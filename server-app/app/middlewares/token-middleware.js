@@ -27,9 +27,11 @@
                     res.log('refresh-token found');
                     var refreshDefered = q.defer();
                     promises.push(refreshDefered.promise);
-                    _self.oauth.decodeRefreshToken(req.headers['refresh-token']).then(function (token) {
+                    _self.oauth.decodeRefreshToken(req.headers['refresh-token']).then(function (data) {
                         refreshDefered.resolve({
-                                'refresh-token': token
+                                'refresh-token': {
+                                    id: data
+                                }
                             });
                     }, function (err) {
                         refreshDefered.reject({
@@ -42,9 +44,9 @@
                     res.log('access-token found');
                     var accessDefered = q.defer();
                     promises.push(accessDefered.promise);
-                    _self.oauth.decodeAccessToken(req.headers['access-token']).then(function (token) {
+                    _self.oauth.decodeAccessToken(req.headers['access-token']).then(function (data) {
                         accessDefered.resolve({
-                                'access-token': token
+                                'access-token': data
                             });
                     }, function (err) {
                         accessDefered.reject({
@@ -59,6 +61,9 @@
                         for (var key in data[i]) {
                             res[key] = data[i][key];
                         }
+                    }
+                    if ((res['access-token']) && (res['access-token']._id)) {
+                        res.userId = res['access-token']._id;
                     }
                     next();
                 }, function (err) {

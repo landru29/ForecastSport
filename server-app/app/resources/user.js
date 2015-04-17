@@ -3,7 +3,8 @@
     var Obj = function (router, options) {
         this.router = router;
         this.options = require('extend')({}, options);
-        // All services are available in this.options.services
+        this.services = this.options.services;
+        // All services are available in this.services
         
         // launch all uppercase functions of the prototype
         for(var func in this) {
@@ -17,8 +18,16 @@
         GET: function () {
             var _self = this;
             this.router.get('/', function (req, res) {
-                // Code here
-                res.send('hello !');
+                res.log(res.userId);
+                _self.services.user.getInformation(res.userId).then(
+                    function(data){
+                        res.send(data);
+                    }, 
+                    function(err){
+                        res.log(err);
+                        res.status(403).send('An error occured when reading user');
+                    }
+                );
             });
         }
     };

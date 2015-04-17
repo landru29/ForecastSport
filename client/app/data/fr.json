@@ -1,2 +1,12 @@
 {
+    "Reset": "Mise à jour",
+    "Connect": "Connexion",
+    "Reset password" : "Réinitialiser le mot de passe",
+    "Close": "Fermer",
+    "Reset your password": "Réinitialisez votre mot de passe",
+    "Password":"Mot de passe",
+    "User":"Identifiant",
+    "Your password is updated": "Votre mot de passe est mis à jour",
+    "You will recieve an email": "Vous allez recevoir un email",
+    "No user found with this email": "Aucun utilisateur trouvé"
 }

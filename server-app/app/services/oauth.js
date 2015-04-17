@@ -70,10 +70,14 @@
         decodeAccessToken: function (token) {
             return this.decodeToken(token, this.options.secretAccess);
         },
+        
+        encodeToken: function(data, secret, options) {
+            return jwt.sign(data, secret, options);
+        },
 
         getRefreshToken: function (user) {
             var defered = q.defer();
-            defered.resolve(jwt.sign(user._id,
+            defered.resolve(this.encodeToken(user._id,
                 this.options.secretRefresh));
             return defered.promise;
         },
@@ -83,7 +87,6 @@
             var defered = q.defer();
             this.decodeRefreshToken(refreshToken).then(
                 function (userId) {
-                    console.log(userId);
                     _self.getAccessTokenFromId(userId).then(
                         function(data){
                             defered.resolve(data);
