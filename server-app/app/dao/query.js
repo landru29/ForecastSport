@@ -3,6 +3,7 @@
 
     // Export the module
     module.exports = function (options) {
+        
         var q = require('q');
 
         var Query = function () {};
@@ -216,7 +217,8 @@
 
             database: options.database,
             table: options.database.get(options.name),
-            options: {}
+            options: {},
+            config: options.config
 
         };
 

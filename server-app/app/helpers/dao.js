@@ -29,7 +29,8 @@
                 pattern: null
             },
             database: null,
-            logger: console
+            logger: console,
+            config: null
         }, options);
         this.database = this.options.database;
 
@@ -37,12 +38,16 @@
         var registered = [];
         for (var key in this.options) {
             switch (key) {
+                /* falls through */
             case 'logger':
+                /* falls through */
             case 'database':
+                /* falls through */
+            case 'config':
                 break;
             default:
                 var elementName = ucFirst(key);
-                this.options.logger.log(' | Loading ' + elementName);
+                this.options.logger.log(' |- Loading ' + elementName);
                 this['_' + key] = this._load(this.options[key]);
                 registered.push(ucFirst(key));
                 this[elementName] = registerGetter(_self, key);
@@ -51,7 +56,7 @@
         }
 
         // Link the elements
-        this.options.logger.log(' | Linking ' + registered.join(', '));
+        this.options.logger.log(' |- Linking ' + registered.join(', '));
         for (var n in registered) {
             this._link(registered[n], registered);
         }
@@ -72,9 +77,10 @@
                     if ((option.pattern) && (files[i].match(option.pattern))) {
                         var matcher = files[i].match(/[a-z0-9]*/);
                         if (matcher) {
-                            this.options.logger.log(' |--- Loading ' + files[i] + ' as ' + matcher[0]);
+                            this.options.logger.log(' |---- Loading ' + files[i] + ' as ' + matcher[0]);
                             result[matcher[0]] = require(option.path + '/' + files[i])({
                                 database: this.database,
+                                config: this.options.config,
                                 name: matcher[0]
                             });
                         }
@@ -89,7 +95,7 @@
             for (var i in objNames) {
                 for (var j in allTypes) {
                     if (this[ucFirst(allTypes[j])](objNames[i]).prototype['_set' + eltType]) {
-                        this.options.logger.log(' |--- this.' + ucFirst(allTypes[j]) + '(' + objNames[i] + ').prototype._set' + eltType + '(this.' + eltType + '(' + objNames[i] + '))');
+                        this.options.logger.log(' |---- this.' + ucFirst(allTypes[j]) + '(' + objNames[i] + ').prototype._set' + eltType + '(this.' + eltType + '(' + objNames[i] + '))');
                         this[ucFirst(allTypes[j])](objNames[i]).prototype['_set' + eltType](this[eltType](objNames[i]));
                     }
                 }

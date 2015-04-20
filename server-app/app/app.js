@@ -18,7 +18,7 @@
         // log stream
         var LoggerService = require('./services/logger.js');
         this.logger = new LoggerService({
-            file: __dirname + '/' + this.config.log.file
+            file: __dirname + '/../' + this.config.log.file
         });
         this.logger.openStream();
         this.logger.log('PID ' + process.pid + ' started');
@@ -70,9 +70,10 @@
 
         // Define the routes
         for (var route in resources) {
-            this.logger.log('> Adding route ' + route);
+            this.logger.log('Adding route ' + route);
             this.app.use('/' + route, require('./' + resources[route].controller)(express.Router(), {
-                services: this.services
+                services: this.services,
+                dao: this.dao
             }));
         }
 
@@ -94,13 +95,14 @@
                 secretRefresh: this.config.OAuth.secretRefresh,
                 secretAccess: this.config.OAuth.secretAccess,
                 expiresInMinutes: this.config.OAuth.expiresInMinutes,
-                dao: this.dao
+                dao: this.dao,
+                services: services
             });
             
-            services.user = new (require('./services/user.js'))({
-                dao: this.dao,
+            services.passwordManager = new (require('./services/password-manager.js'))({
                 resetPasswordSecret: this.config.OAuth.resetPasswordSecret,
                 email: this.config.email,
+                dao: this.dao,
                 services: services
             });
             

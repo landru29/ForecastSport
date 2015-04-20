@@ -23,7 +23,7 @@
                 if ((!email) || (!redirection)) {
                     res.status(403).send('No email or no redirection was specified');
                 } else {
-                    _self.services.user.resetPassword(email, redirection).then(
+                    _self.services.passwordManager.resetPassword(email, redirection).then(
                         function (data) {
                             res.send({
                                 message: 'email send'
@@ -41,7 +41,7 @@
             var _self = this;
             this.router.post('/', function (req, res) {
                 if ((req.body.token) && (req.body.password)) {
-                     _self.services.user.updatePassword(req.body.password, req.body.token).then(
+                     _self.services.passwordManager.updatePassword(req.body.password, req.body.token).then(
                         function (data) {
                             res.send({
                                 message: 'Password updated'

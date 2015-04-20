@@ -19,9 +19,10 @@
             var _self = this;
             this.router.get('/', function (req, res) {
                 res.log(res.userId);
-                _self.services.user.getInformation(res.userId).then(
-                    function(data){
-                        res.send(data);
+                var Query = _self.options.dao.Query('user');
+                (new Query()).getById(res.userId).then(
+                    function(user){
+                        res.send(user.getInformation());
                     }, 
                     function(err){
                         res.log(err);

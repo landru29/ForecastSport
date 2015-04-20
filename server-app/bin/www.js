@@ -56,11 +56,11 @@ GLOBAL.q = require('q');
     } else {
         switch (process.env.task) {
         case 'server':
-            var app = (new Server()).app;
+            var application = new Server();
 
             /* Binding */
-            var server = app.listen(config.process['binding-port'], function () {
-                log('Express server listening on port ' + server.address().port);
+            var server = application.app.listen(config.process['binding-port'], function () {
+                application.logger.log('Express server listening on port ' + server.address().port);
             });
             break;
         case 'deamon':

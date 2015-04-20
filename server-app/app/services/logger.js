@@ -18,11 +18,14 @@
          * @param {String} message Message to log
          */
         log: function (message, level) {
+            var pidColor = (process.pid % 7) + 31;
+            var date = (new Date()).toISOString();
             var formatedMessage = JSON.stringify(message).replace(/^"/,'').replace(/"$/,'');
-            var toDisplay = (level ? level[0].toUpperCase() + ' ' : '  ') + (new Date()).toISOString() + '[' + process.pid + ']: > ' + formatedMessage;
+            var toDisplay = (level ? "\x1b[31m" + level[0].toUpperCase() + ' ' : '  ') + "\x1b[33m" + date + " \x1b[" + pidColor + "m[" + process.pid + "]\x1b[0m " + formatedMessage;
+            var toLog = (level ? level[0].toUpperCase() + ' ' : '  ') + date + '[' + process.pid + '] > ' + formatedMessage;
             console.log(toDisplay);
             if (Logger.prototype.logStream) {
-                Logger.prototype.logStream.write(toDisplay + "\n");
+                Logger.prototype.logStream.write(toLog + "\n");
             }
         },
         /**

@@ -2,7 +2,7 @@
     'use strict';
 
 
-    var User = function (options) {
+    var PasswordManager = function (options) {
         this.options = require('extend')({
             collection: null,
             resetPasswordSecret: null,
@@ -15,30 +15,7 @@
         this.UserModel = this.options.dao.Model('user');
     };
 
-    User.prototype = {
-        /**
-         * Get user public information
-         * @param   {String} id User Id
-         * @returns {Object} public information about the user
-         */
-        getInformation: function (id) {
-            var defered = q.defer();
-            
-            (new this.UserQuery()).getById(id).then(
-                function(user){
-                    defered.resolve({
-                        name: user.get('name'),
-                        login: user.get('login'),
-                        email: user.get('email'),
-                        role: user.get('role'),
-                    });
-                }, 
-                function(err){
-                    defered.reject('No user found');
-                }
-            );
-            return defered.promise;
-        },
+    PasswordManager.prototype = {
 
         /**
          * Send an email with link to reset the user password
@@ -129,5 +106,5 @@
         }
     };
 
-    module.exports = User;
+    module.exports = PasswordManager;
 })();

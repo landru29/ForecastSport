@@ -25,23 +25,32 @@
                 return this._get(name);
             }
         };
-        
-        ThisModel.prototype.save = function() {
+
+        ThisModel.prototype.save = function () {
             var defered = q.defer();
             if ((this.has('login')) && (this.has('password')) && (this.has('email'))) {
                 this._save().then(
-                    function(data){
+                    function (data) {
                         defered.resolve(data);
-                    }, 
-                    function(err){
+                    },
+                    function (err) {
                         defered.reject(err);
                     }
                 );
             } else {
                 defered.reject('Missing mendatory field : email, password, login');
             }
-            
+
             return defered.promise;
+        };
+
+        ThisModel.prototype.getInformation = function () {
+            return {
+                name: this.get('name'),
+                login: this.get('login'),
+                email: this.get('email'),
+                role: this.get('role'),
+            };
         };
 
         return ThisModel;

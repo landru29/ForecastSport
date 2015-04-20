@@ -2,6 +2,7 @@
     'use strict';
     // Export the module
     module.exports = function (options) {
+        
         var q = require('q');
 
         var Model = function () {};
@@ -153,7 +154,8 @@
                 return this._has(key);
             },
 
-            database: options.database
+            database: options.database,
+            config: options.config
 
         };
 

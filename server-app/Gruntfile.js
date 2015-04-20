@@ -39,7 +39,8 @@ module.exports = function (grunt) {
         project: {
             app: './app',
             test: './test',
-            restClient: './rest-client'
+            restClient: './rest-client',
+            seeds: './seeds'
         },
 
         /*************************************************/
@@ -91,6 +92,7 @@ module.exports = function (grunt) {
             dev: [
                 '<%= project.app%>/**/*.js',
                 '<%= project.test%>/**/*.js',
+                '<%= project.seeds%>/**/*.js',
                 '<%= project.restClient%>/**/*.js',
                 'Gruntfile.js'
             ],
@@ -130,13 +132,34 @@ module.exports = function (grunt) {
                     dest: '<%= project.restClient%>/build/server.js'
                 }
             }
-        }
+        },
+        
+        /*****************************************************/
+        /** BUILD THE SERVER                                **/
+        /*****************************************************/
+        
+        compress: {
+            dist: {
+                options: {
+                    archive: 'dist.tgz'
+                },
+                files: [
+                    {
+                        src: ['<%= project.app%>/**', '<%= project.seeds%>/**', 'package.json', './bin/**'],
+                        expand: true,
+                        dest: '.'
+                    }
+                ]
+            }
+        },
+
 
     });
 
-    grunt.registerTask('check', [
+    grunt.registerTask('dist', [
         'jshint:dev',
-        'mochaTest'
+        'mochaTest',
+        'compress:dist'
     ]);
 
     grunt.registerTask('rest', [
@@ -148,5 +171,5 @@ module.exports = function (grunt) {
     ]);
 
 
-    grunt.registerTask('default', ['check']);
+    grunt.registerTask('default', ['dist']);
 };

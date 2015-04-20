@@ -14,7 +14,7 @@
                     function(err){
                         defered.reject(err);
                     }
-                )
+                );
             }, 
             function(err){
                 defered.reject(err);
