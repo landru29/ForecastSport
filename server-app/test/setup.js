@@ -5,6 +5,7 @@ if (!GLOBAL._setupLoaded) {
         GLOBAL.assert = require('assert');
         GLOBAL.q = require('q');
         GLOBAL.appFolder = __dirname + '/../app';
+        GLOBAL.Dao = require(__dirname + '/../app/helpers/dao.js');
 
         /**
          * Drop a table in Mongodb
@@ -41,7 +42,7 @@ if (!GLOBAL._setupLoaded) {
 
         var loadFixtures = function () {
             var promises = [];
-            promises.push(db.get('users').insert({
+            promises.push(db.get('user').insert({
                 name: 'mickey-mouse',
                 login: 'mickey-login',
                 password: require('crypto').createHash('sha256').update('kiki').digest('hex'),
@@ -60,6 +61,17 @@ if (!GLOBAL._setupLoaded) {
                 };
                 return require('monk')(database.host + ':' + database.port + '/' + database.database);
             })();
+            GLOBAL.dao = new(require(__dirname + '/../app/helpers/dao.js'))({
+                query: {
+                    path: __dirname + '/../app/dao',
+                    pattern: /-query\.js$/
+                },
+                model: {
+                    path: __dirname + '/../app/dao',
+                    pattern: /-model\.js$/
+                },
+                database: db
+            });
             done();
         });
 

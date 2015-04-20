@@ -11,6 +11,8 @@
         this.services = this.options.services;
         var nodemailer = require('nodemailer');
         this.transporter = nodemailer.createTransport(this.options.email);
+        this.UserQuery = this.options.dao.Query('user');
+        this.UserModel = this.options.dao.Model('user');
     };
 
     User.prototype = {
@@ -21,18 +23,17 @@
          */
         getInformation: function (id) {
             var defered = q.defer();
-            this.options.collection.getOne({
-                _id: id
-            }).then(
-                function (user) {
+            
+            (new this.UserQuery()).getById(id).then(
+                function(user){
                     defered.resolve({
-                        name: user.name,
-                        login: user.login,
-                        email: user.email,
-                        role: user.role,
+                        name: user.get('name'),
+                        login: user.get('login'),
+                        email: user.get('email'),
+                        role: user.get('role'),
                     });
-                },
-                function (err) {
+                }, 
+                function(err){
                     defered.reject('No user found');
                 }
             );
@@ -48,7 +49,7 @@
         resetPassword: function (email, redirection) {
             var defered = q.defer();
             var _self = this;
-            this.options.collection.getAll({
+            (new this.UserQuery()).getAll({
                 email: email
             }).then(
                 function (users) {
@@ -61,13 +62,13 @@
                     };
                     for (var i in users) {
                         
-                        var token = _self.options.services.oAuth.encodeToken(users[i], _self.options.resetPasswordSecret, {expiresInMinutes: 5});
-                        var query = '/login/' + encodeURIComponent(users[i].login);
+                        var token = _self.options.services.oAuth.encodeToken(users[i].get(), _self.options.resetPasswordSecret, {expiresInMinutes: 5});
+                        var query = '/login/' + encodeURIComponent(users[i].get('login'));
                         query += '/token/' + encodeURIComponent(token);
                         var uri = redirection + query;
-                        mailOptions.html += '<div><b>login: </b>' + users[i].login + '</div>';
+                        mailOptions.html += '<div><b>login: </b>' + users[i].get('login') + '</div>';
                         mailOptions.html += '<div><b>reset: </b><a href="' + uri + '">' + uri + '</a></div><br>';
-                        mailOptions.text += 'login: ' + users[i].login + "\n";
+                        mailOptions.text += 'login: ' + users[i].get('login') + "\n";
                         mailOptions.text += 'use this link: ' + uri + "\n";
                         _self.services.logger.log('Link: ' + uri);
                     }
@@ -99,13 +100,21 @@
             var _self = this;
             if (password) {
                 _self.services.oAuth.decodeToken(token, _self.options.resetPasswordSecret).then(
-                    function(user){
-                        _self.options.collection.update({_id: user._id, password: password}).then(
-                            function(){
-                                defered.resolve();
+                    function(userData){
+                        (new _self.UserQuery()).getById(userData._id).then(
+                            function(user){
+                                user.set('password', password);
+                                user.save().then(
+                                    function(){
+                                        defered.resolve();
+                                    }, 
+                                    function(err){
+                                        defered.reject('Could not update the user');
+                                    }
+                                );
                             }, 
                             function(err){
-                                defered.reject('Could not update the user');
+                                defered.reject('Could not find the user');
                             }
                         );
                     }, 

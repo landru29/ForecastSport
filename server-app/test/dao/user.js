@@ -1,55 +1,53 @@
 require('../setup.js');
 
 (function () {
+    describe('Dao/User', function () {
 
-    var UserTable = require(appFolder + '/dao/user-table.js');
-
-
-    describe("dao/UserTable", function () {
         it("Insert and read", function (done) {
-            var userTable = new UserTable({
-                db: db
-            });
-            var user = {
+            var User = dao.Model('user');
+            var Query = dao.Query('user');
+            var user = new User({
                 name: 'mickey',
                 login: 'login',
                 email: 'bob@gmail.com',
                 password: 'kiki'
-            };
-            userTable.insert(user).then(
-                function (data) {
+            });
+            user.save().then(
+                function () {
                     var userFilter = {
                         login: 'login',
                         password: 'kiki'
                     };
-                    userTable.getOne(userFilter).then(function (doc) {
-                        try {
-                            assert.equal(doc.login, 'login', 'login sould be "login"');
-                        } catch (e) {
-                            done(e);
+                    (new Query()).getOne(userFilter).then(
+                        function (doc) {
+                            try {
+                                assert.equal(doc.get('login'), 'login', 'login sould be "login"');
+                            } catch (e) {
+                                done(e);
+                                return;
+                            }
+                            done();
+                        },
+                        function (err) {
+                            done(err);
                         }
-                        done();
-                    }, function (err) {
-                        done(err);
-                    });
+                    );
                 },
                 function (err) {
                     done(err);
                 }
             );
-
         });
 
         it("Mendatory login", function (done) {
-            var userTable = new UserTable({
-                db: db
-            });
-            var user = {
+            var User = dao.Model('user');
+            var user = new User({
                 name: 'mickey',
                 password: 'kiki',
                 email: 'bob@gmail.com',
-            };
-            userTable.insert(user).then(
+            });
+
+            user.save().then(
                 function (data) {
                     done('Should not insert the user without login');
                 },
@@ -57,86 +55,85 @@ require('../setup.js');
                     done();
                 }
             );
-
         });
 
+
         it("Mendatory password", function (done) {
-            var userTable = new UserTable({
-                db: db
-            });
-            var user = {
+            var User = dao.Model('user');
+            var user = new User({
                 name: 'mickey',
-                login: 'papanoel',
+                login: 'kiki',
                 email: 'bob@gmail.com',
-            };
-            userTable.insert(user).then(
+            });
+
+            user.save().then(
                 function (data) {
-                    done('Should not insert the user without password');
+                    done('Should not insert the user without login');
                 },
                 function (err) {
                     done();
                 }
             );
-
         });
 
+
         it("Mendatory email", function (done) {
-            var userTable = new UserTable({
-                db: db
-            });
-            var user = {
+            var User = dao.Model('user');
+            var user = new User({
                 name: 'mickey',
                 login: 'papanoel',
                 password: 'kiki',
-            };
-            userTable.insert(user).then(
+            });
+
+            user.save().then(
                 function (data) {
-                    done('Should not insert the user without email');
+                    done('Should not insert the user without login');
                 },
                 function (err) {
                     done();
                 }
             );
-
         });
 
         it("Insert twice", function (done) {
-            var userTable = new UserTable({
-                db: db
-            });
-            var user = {
+            var User = dao.Model('user');
+            var user1 = new User({
                 name: 'mickey-mouse',
                 login: 'login',
                 password: 'kiki',
                 email: 'bob@gmail.com',
-            };
-            userTable.insert(user).then(
-                function () {
-                    userTable.insert(user).then(
+            });
+            var user2 = new User({
+                name: 'mickey-mouse',
+                login: 'login',
+                password: 'kiki',
+                email: 'bob@gmail.com',
+            });
+            user1.save().then(
+                function (data) {
+                    user2.save().then(
                         function () {
                             done('Should not insert the same user');
                         },
-                        function () {
+                        function (err) {
                             done();
                         }
                     );
                 },
-                function () {
-                    done();
+                function (err) {
+                    done(err);
                 }
             );
 
         });
 
         it("Unknown user", function (done) {
-            var userTable = new UserTable({
-                db: db
-            });
+            var Query = dao.Query('user');
             var userFilter = {
                 login: 'login',
                 password: 'rocco'
             };
-            userTable.getOne(userFilter).then(function (doc) {
+            (new Query()).getOne(userFilter).then(function (doc) {
                 done('Should not retrieve any users');
             }, function (err) {
                 done();
@@ -144,43 +141,42 @@ require('../setup.js');
 
         });
 
+
         it("update user", function (done) {
-            var userTable = new UserTable({
-                db: db
-            });
-            var user1 = {
+            var User = dao.Model('user');
+            var user = new User({
                 name: 'mickey',
                 login: 'login',
                 password: 'kiki',
                 email: 'bob@gmail.com',
-            };
-            var user2 = {
-                login: 'login',
-                name: 'plutot',
-                password: 'Sissi l\'impératrice'
-            };
+            });
 
-            userTable.insert(user1).then(
+            user.save().then(
                 function () {
-                    userTable.update(user2).then(function (doc) {
-                        try {
-                            expect(doc.name).toBe(user2.name);
-                        } catch (e) {
-                            done(e);
+                    user.set('name', 'plutot');
+                    user.save().then(
+                        function (data) {
+                            try {
+                                expect(data.get('name')).toBe('plutot');
+                            } catch (e) {
+                                done(e);
+                                return;
+                            }
+                            done();
+                        },
+                        function (err) {
+                            done('Should update the user');
                         }
-                        done();
-                    }, function (err) {
-                        done('Should update the user');
-                    });
+                    );
                 },
                 function (err) {
                     done(err);
                 }
             );
 
-
-
         });
 
+
     });
+
 })();

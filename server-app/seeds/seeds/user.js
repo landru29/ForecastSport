@@ -1,14 +1,13 @@
 (function () {
     var seed = function(options) {
-        var UserService = require(options.basePath + '/app/dao/user-table.js');
-        var userTable = new UserService({
-            db: options.db
-        });
+        var User = options.dao.Model('user');
+        var UserQuery = options.dao.Query('user');
 
         var defered = q.defer();
-        userTable.remove({login:options.data.login}).then(
-            function(data){
-                userTable.insert(options.data).then(
+        
+        (new UserQuery()).remove({login:options.data.login}).then(
+            function(){
+                (new User(options.data)).save().then(
                     function(data){
                         defered.resolve(data);
                     }, 
@@ -20,7 +19,7 @@
             function(err){
                 defered.reject(err);
             }
-        )
+        );
         return defered.promise;
     };
     

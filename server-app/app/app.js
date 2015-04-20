@@ -8,16 +8,37 @@
         this.config = require('./config.json');
         require('extend')(this.config, require('./authentification.json'));
 
-        // Load resources
+        // Load resources data
         var resources = require('./resources.json');
+
+        // Initialize database
+        this.database = new(require('./helpers/database.js'))(this.config.db);
+        this.db = this.database.getDatabase();
+
+        // log stream
+        var LoggerService = require('./services/logger.js');
+        this.logger = new LoggerService({
+            file: __dirname + '/' + this.config.log.file
+        });
+        this.logger.openStream();
+        this.logger.log('PID ' + process.pid + ' started');
+
+        // loading db queries
+        this.dao = new(require('./helpers/dao.js'))({
+            query: {
+                path: __dirname + '/dao',
+                pattern: /-query\.js$/
+            },
+            model: {
+                path: __dirname + '/dao',
+                pattern: /-model\.js$/
+            },
+            database: this.db,
+            logger: this.logger
+        });
 
         // load services
         this.services = this.loadServices();
-
-        // log stream
-        this.logger = this.services.logger;
-        this.logger.openStream();
-        this.logger.log('PID ' + process.pid + ' started');
 
         // Initialize the API
         this.logger.log('** Initialize Express **');
@@ -66,44 +87,28 @@
          * @returns {Object} [[Description]]
          */
         loadServices: function () {
-            var UserTable = require('./dao/user-table.js');
-            var OAuthService = require('./services/oauth.js');
-            var LoggerService = require('./services/logger.js');
-            var DatabaseService = require('./services/database.js');
-            var UserService = require('./services/user.js');
-
-            // open database
-            var database = new DatabaseService(this.config.db);
-            this.db = database.getDatabase();
-
-            var userTable = new UserTable({
-                db: this.db
-            });
-
-            var _self = this;
-
+            
             var services = {};
-
-            services.oAuth = new OAuthService({
-                userTable: userTable,
-                secretRefresh: _self.config.OAuth.secretRefresh,
-                secretAccess: _self.config.OAuth.secretAccess,
-                expiresInMinutes: _self.config.OAuth.expiresInMinutes,
+            
+            services.oAuth= new (require('./services/oauth.js'))({
+                secretRefresh: this.config.OAuth.secretRefresh,
+                secretAccess: this.config.OAuth.secretAccess,
+                expiresInMinutes: this.config.OAuth.expiresInMinutes,
+                dao: this.dao
+            });
+            
+            services.user = new (require('./services/user.js'))({
+                dao: this.dao,
+                resetPasswordSecret: this.config.OAuth.resetPasswordSecret,
+                email: this.config.email,
                 services: services
             });
-            services.user = new UserService({
-                collection: userTable,
-                resetPasswordSecret: _self.config.OAuth.resetPasswordSecret,
-                email: _self.config.email,
-                services: services
-            });
-            services.logger = new LoggerService({
-                file: __dirname + '/' + this.config.log.file
-            });
-            services.database = database;
+            
+            services.logger = this.logger;
 
             return services;
         },
+        
         /**
          * Load a custom middleware for express
          * @param   {String}         name filename of the middleware

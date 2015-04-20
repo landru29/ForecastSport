@@ -2,17 +2,13 @@ require('../setup.js');
 
 (function () {
 
-    var UserTable = require(appFolder + '/dao/user-table.js');
     var OAuthService = require(appFolder + '/services/oauth.js');
 
 
     describe("service/OAuth", function () {
         it("Generate keys", function (done) {
-            var userTable = new UserTable({
-                db: db
-            });
             var oauth = new OAuthService({
-                userTable: userTable,
+                dao: dao,
                 secretRefresh: 'baobab',
                 secretAccess: 'tarzan'
             });

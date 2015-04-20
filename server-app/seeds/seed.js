@@ -2,9 +2,20 @@
 
     var config = require('../app/config.json');
     require('extend')(config, require('../app/authentification.json'));
-    var Database = require('../app/services/database.js');
-    var db = (new Database(config.db)).getDatabase();
+    var Database = require('../app/helpers/database.js');
     GLOBAL.q = require('q');
+    var db = (new Database(config.db)).getDatabase();
+    var dao = new(require('../app/helpers/dao.js'))({
+        query: {
+            path: __dirname + '/../app/dao',
+            pattern: /-query\.js$/
+        },
+        model: {
+            path: __dirname + '/../app/dao',
+            pattern: /-model\.js$/
+        },
+        database: db
+    });
     var seedData = require('./seeds.json');
 
     require('fs').readdir('./seeds', function (err, files) {
@@ -18,18 +29,18 @@
                 console.log('  * ' + n);
                 promises.push(require('./seeds/' + files[i])({
                     config: config,
-                    db: db,
+                    dao: dao,
                     data: thisSeed[n],
                     basePath: __dirname + '/..'
                 }));
             }
         }
         q.all(promises).then(
-            function(data){
+            function (data) {
                 console.log('Success !');
                 db.close();
-            }, 
-            function(err){
+            },
+            function (err) {
                 console.log(err);
                 db.close();
             }

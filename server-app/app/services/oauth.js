@@ -8,7 +8,8 @@
             secretRefresh: 'secret',
             secretAccess: 'secret',
             expiresInMinutes: '10',
-            userTable: null
+            userTable: null,
+            dao: null
         }, options);
     };
 
@@ -17,14 +18,15 @@
             var _self = this;
             var defered = q.defer();
             if ((!login) || (!password)) {
-                defered.reject('Authentication failed');
+                defered.reject('Authentication failed !');
             } else {
-                _self.options.userTable.getOne({
+                var UserQuery = _self.options.dao.Query('user');
+                (new UserQuery()).getOne({
                     login: login,
                     password: password
                 }).then(
                     function (user) {
-                        _self.getRefreshToken(user).then(
+                        _self.getRefreshToken(user._data).then(
                             function (refreshToken) {
                                 _self.getAccessToken(refreshToken).then(
                                     function (accessToken) {
@@ -44,6 +46,7 @@
                         );
                     },
                     function (err) {
+                        console.log(err);
                         defered.reject('Authentication failed');
                     }
                 );
@@ -70,8 +73,8 @@
         decodeAccessToken: function (token) {
             return this.decodeToken(token, this.options.secretAccess);
         },
-        
-        encodeToken: function(data, secret, options) {
+
+        encodeToken: function (data, secret, options) {
             return jwt.sign(data, secret, options);
         },
 
@@ -88,10 +91,10 @@
             this.decodeRefreshToken(refreshToken).then(
                 function (userId) {
                     _self.getAccessTokenFromId(userId).then(
-                        function(data){
+                        function (data) {
                             defered.resolve(data);
-                        }, 
-                        function(err){
+                        },
+                        function (err) {
                             defered.reject(err);
                         }
                     );
@@ -106,15 +109,16 @@
         getAccessTokenFromId: function (userId) {
             var _self = this;
             var defered = q.defer();
-            _self.options.userTable.getById(userId).then(
-                function (user) {
+            var UserQuery = this.options.dao.Query('user');
+            (new UserQuery()).getById(userId).then(
+                function(user){
                     defered.resolve(jwt.sign(
-                        JSON.parse(JSON.stringify(user)),
+                        JSON.parse(JSON.stringify(user._data)),
                         _self.options.secretAccess, {
                             expiresInMinutes: _self.options.expiresInMinutes
                         }));
-                },
-                function (err) {
+                }, 
+                function(err){
                     defered.reject('User not found');
                 }
             );
