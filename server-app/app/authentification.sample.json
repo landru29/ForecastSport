@@ -19,5 +19,9 @@
     },
     "cookies": {
         "secret": ""
+    },
+    "facebook": {
+        "appId": "",
+        "secret": ""
     }
 }

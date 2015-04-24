@@ -13,7 +13,6 @@
 
         // Initialize database
         this.database = new(require('./helpers/database.js'))(this.config.db);
-        this.db = this.database.getDatabase();
 
         // log stream
         var LoggerService = require('./services/logger.js');
@@ -33,7 +32,7 @@
                 path: __dirname + '/dao',
                 pattern: /-model\.js$/
             },
-            database: this.db,
+            database: this.database.getDatabase(),
             logger: this.logger
         });
 
@@ -51,6 +50,11 @@
         }));
         this.app.use(require('cookie-parser')(this.config.cookies.secret));
         this.app.use(require('body-parser').json());
+        this.app.use(require('express-session')({
+            secret: 'keyboard cat',
+            resave: false,
+            saveUninitialized: true
+        }));
         this.app.use(this.getMiddleware('cors', {
             domains: this.config.cors,
             services: this.services
@@ -73,7 +77,8 @@
             this.logger.log('Adding route ' + route);
             this.app.use('/' + route, require('./' + resources[route].controller)(express.Router(), {
                 services: this.services,
-                dao: this.dao
+                dao: this.dao,
+                config: this.config
             }));
         }
 
@@ -88,10 +93,10 @@
          * @returns {Object} [[Description]]
          */
         loadServices: function () {
-            
+
             var services = {};
-            
-            services.oAuth= new (require('./services/oauth.js'))({
+
+            services.oAuth = new(require('./services/oauth.js'))({
                 secretRefresh: this.config.OAuth.secretRefresh,
                 secretAccess: this.config.OAuth.secretAccess,
                 expiresInMinutes: this.config.OAuth.expiresInMinutes,
@@ -99,18 +104,20 @@
                 services: services
             });
             
-            services.passwordManager = new (require('./services/password-manager.js'))({
+            services.facebook = new(require('./services/facebook.js'))(this.config.facebook);
+
+            services.passwordManager = new(require('./services/password-manager.js'))({
                 resetPasswordSecret: this.config.OAuth.resetPasswordSecret,
                 email: this.config.email,
                 dao: this.dao,
                 services: services
             });
-            
+
             services.logger = this.logger;
 
             return services;
         },
-        
+
         /**
          * Load a custom middleware for express
          * @param   {String}         name filename of the middleware

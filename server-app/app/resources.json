@@ -5,6 +5,12 @@
             "POST": ["all"]
         }
     },
+    "facebook": {
+        "controller": "resources/facebook.js",
+        "acl": {
+            "GET": ["all"]
+        }
+    },
     "user": {
         "controller": "resources/user.js",
         "acl": {

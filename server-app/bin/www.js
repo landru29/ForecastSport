@@ -6,6 +6,8 @@ GLOBAL.q = require('q');
 (function () {
 
     var cluster = require('cluster');
+    var http = require('http');
+    var https = require('https');
     var config = require('../app/config.json');
     var Server = require('../app/app');
 
@@ -57,9 +59,17 @@ GLOBAL.q = require('q');
         switch (process.env.task) {
         case 'server':
             var application = new Server();
+            
+            /*var fs = require('fs');
+            var credentials = {
+                key: fs.readFileSync('sslcert/server.key', 'utf8'),
+                cert: fs.readFileSync('sslcert/server.crt', 'utf8')
+            };*/
 
             /* Binding */
-            var server = application.app.listen(config.process['binding-port'], function () {
+            var httpServer = http.createServer(application.app);
+            //var httpsServer = https.createServer(credentials, app);
+            var server = httpServer.listen(config.process['binding-port'], function () {
                 application.logger.log('Express server listening on port ' + server.address().port);
             });
             break;

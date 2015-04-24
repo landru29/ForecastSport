@@ -35,6 +35,7 @@
         "grunt-contrib-jshint": "0.10.0",
         "grunt-mocha-test":"0.12.7",
         "grunt-contrib-compress":"0.13.0",
+        "express-session":"1.11.1",
         "expect": "*",
         "angular-webstorage":"0.1.2"
     }
